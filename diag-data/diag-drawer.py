@@ -39,6 +39,7 @@ def build_diag(project_name:str):
     node_sizes = [data["size"] for _, data in diag.nodes(data=True)]
     
     pos = nx.spring_layout(diag)
+    plt.figure(figsize=(20, 12))
     nx.draw_networkx_nodes(diag, pos, node_color=node_colors, node_size=node_sizes)
     nx.draw_networkx_labels(diag, pos)
 
@@ -64,10 +65,47 @@ def build_diag(project_name:str):
     plt.axis("off")
     plt.show()
 
+def build_diag_mermaid(project_name:str):
+    discovery_server_data = pd.read_csv(f"diag-data/{project_name}/discovery-server.csv", header=None, skiprows=1)
+    discovery_clients_data = pd.read_csv(f"diag-data/{project_name}/discovery-clients.csv", header=None, skiprows=1)
+    load_balanced_requesters_data = pd.read_csv(f"diag-data/{project_name}/eureka-load-balanced.csv", header=None, skiprows=1)
+
+    discovery_servers = discovery_server_data[0].dropna().unique().tolist()
+    discovery_clients = discovery_clients_data[0].dropna().unique().tolist()
+    load_balanced_requesters = load_balanced_requesters_data[0].dropna().unique().tolist()
+
+    # mermaid header
+    res = ["```mermaid", "graph LR"]
+
+    # entities
+    for s in discovery_servers:
+        res.append(f'   {s}["{s} (server)"]:::server')
+    for c in discovery_clients: 
+        res.append(f'   {c}["{c} (client)"]:::client')
+    for lbr in load_balanced_requesters:
+        if lbr not in discovery_clients and lbr not in discovery_servers:
+            res.append(f'   {lbr}["{lbr} (load-balanced)"]:::lbr')
+
+    # relations
+    for s in discovery_servers:
+        for c in discovery_clients:
+            res.append(f'   {c} -->|{REGISTER_IN_DISC_SERVER_MESSAGE}| {s}')
+        for lbr in load_balanced_requesters:
+            res.append(f'   {lbr} -->|{FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE}| {s}')
+    
+    # style
+    res.append('classDef server fill:#ccffcc,stroke:#006600,stroke-width:2px;')
+    res.append('classDef client fill:#e5ccff,stroke:#660066,stroke-width:2px;')
+    res.append('classDef lbr fill:#cce0ff,stroke:#003366,stroke-width:2px;')
+    res.append('```')
+
+    with open("output_diag.mmd", "w") as f:
+        f.write("\n".join(res))
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         project_name = sys.argv[1]
-        build_diag(project_name)
+        build_diag_mermaid(project_name)
     else:
         print("too many arguments: the function expects only project name")
