@@ -3,6 +3,7 @@ if [ $# -eq 0 ]; then
 fi
 
 PROJECT_NAME=$1
+PROJECT_DIR=$2
 
 # TODO: make function for codeql queries
 
@@ -20,6 +21,8 @@ codeql bqrs decode diag-data/$PROJECT_NAME/discovery-server.bqrs   --format=csv 
 # searching for load-balanced requesters
 codeql query run codeql-query/eureka-load-balanced.ql   --database codeql-dbs/codeql-db-petclinic-microservices   --output diag-data/$PROJECT_NAME/eureka-load-balanced.bqrs
 codeql bqrs decode diag-data/$PROJECT_NAME/eureka-load-balanced.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/eureka-load-balanced.csv
+
+./find-yml-app-configs.sh $PROJECT_DIR diag-data/$PROJECT_NAME
 
 echo "Building diagram"
 if [ -d "diag-data/.venv" ]; then
