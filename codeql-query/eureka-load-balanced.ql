@@ -7,4 +7,4 @@ where
   ann_class.getType().getQualifiedName().matches("%EnableDiscoveryClient") and
   ann_method = m.getAnAnnotation() and
   ann_method.getType().getQualifiedName().matches("%LoadBalanced")
-select c
+select c, c.getFile().getRelativePath()

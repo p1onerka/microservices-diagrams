@@ -5,4 +5,4 @@ from Class c, Annotation ann
 where
   ann = c.getAnAnnotation() and
   ann.getType().getQualifiedName().matches("%EnableDiscoveryClient")
-select c
+select c, c.getFile().getRelativePath()
