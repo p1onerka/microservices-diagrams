@@ -1,4 +1,8 @@
+---
+library: false
+warnOnImplicitThis: false
 name: user/test-queries
 version: 0.0.1
 dependencies:
-  codeql/java-all: "*"
+  codeql/java-all: '*'
+  codeql/util: ^2.0.22
