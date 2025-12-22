@@ -12,7 +12,8 @@ from
   YamlSequence servicePredicatesSeq,
   YamlString servicePredicate,
   string serviceFrontendLink,
-  string serviceName
+  string serviceName,
+  StringLiteral s
 where
   doc.getFile().getExtension() in ["yml", "yaml"] and
   root = doc.eval().(YamlMapping) and
@@ -24,9 +25,12 @@ where
   routeMap.lookup("uri") = serviceLink and
   routeMap.lookup("predicates") = servicePredicatesSeq and
   servicePredicatesSeq.getAChild().(YamlString) = servicePredicate and
-  servicePredicate.getValue().regexpCapture("Path=(.+)$", 1) = serviceFrontendLink and
-  serviceLink.getValue().regexpCapture("lb://(.+)$", 1) = serviceName
+  servicePredicate.getValue().regexpCapture("Path=/(.+)\\*\\*$", 1) = serviceFrontendLink and
+  serviceLink.getValue().regexpCapture("lb://(.+)$", 1) = serviceName and
+  s.getValue().indexOf(serviceFrontendLink) >= 0
 select
   doc.getFile().getRelativePath(),
   serviceName,
-  serviceFrontendLink
+  serviceFrontendLink,
+  s.getValue(),
+  s.getFile().getRelativePath()
