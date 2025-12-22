@@ -13,6 +13,8 @@ echo "Collecting data about services"
 mkdir -p "diag-data/$PROJECT_NAME"
 mkdir -p "diag-data/$BQRS_DIR_NAME"
 
+# ------------------------ JAVA BLOCK ------------------------ 
+
 # searching for eureka disovery clients
 codeql query run codeql-query/eureka-discovery-clients.ql   --database codeql-dbs/codeql-db-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/discovery-clients.bqrs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/discovery-clients.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/discovery-clients.csv
@@ -29,20 +31,26 @@ codeql bqrs decode diag-data/$BQRS_DIR_NAME/eureka-load-balanced.bqrs   --format
 codeql query run codeql-query/rest-requesters.ql   --database codeql-dbs/codeql-db-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/rest-requesters.bqrs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/rest-requesters.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/rest-requesters.csv
 
-# searching for app names in Eureka (for mapping them with REST requests later)
-# ./find-yml-app-configs.sh $PROJECT_DIR diag-data/$PROJECT_NAME
-
-# searching for GET requests in javascript code
-codeql query run codeql-query-js/rest-requests-javascript-fontend.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/js-gets.bqrs
-codeql bqrs decode diag-data/$BQRS_DIR_NAME/js-gets.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/js-gets.csv   
+# ---------------------- CONFIG BLOCK ---------------------- 
 
 # searching for app names in Eureka (for mapping them with REST requests later)
 codeql query run codeql-query-js/locate-service-names.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/service-names.bqrs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/service-names.bqrs   --format=csv   --output diag-data/petclinic/service-names.csv
+# ./find-yml-app-configs.sh $PROJECT_DIR diag-data/$PROJECT_NAME
 
-# find link to github config server
+# searching for link to github config server
 codeql query run codeql-query-js/locate-config-server.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/config-server-link.bqrs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/config-server-link.bqrs   --format=csv   --output diag-data/petclinic/config-server-link.csv
+
+# --------------------- JAVASCRIPT BLOCK --------------------- 
+
+# searching for GET requests in javascript code
+codeql query run codeql-query-js/rest-requests-javascript-fontend.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/js-gets.bqrs
+codeql bqrs decode diag-data/$BQRS_DIR_NAME/js-gets.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/js-gets.csv 
+
+# searching for routes of services in frontend
+codeql query run codeql-query-js/locate-routes-of-services-in-frontend.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs
+codeql bqrs decode diag-data/$BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs   --format=csv   --output diag-data/$PROJECT_NAME/routes-of-services-in-frontend.csv 
 
 echo "Building diagram"
 if [ -d "diag-data/.venv" ]; then
