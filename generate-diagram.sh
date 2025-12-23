@@ -38,8 +38,12 @@ codeql query run codeql-query-js/locate-service-names.ql   --database codeql-dbs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/service-names.bqrs   --format=csv   --output diag-data/petclinic/service-names.csv
 # ./find-yml-app-configs.sh $PROJECT_DIR diag-data/$PROJECT_NAME
 
-# searching for link to github config server
-codeql query run codeql-query-js/locate-config-server.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/config-server-link.bqrs
+# searching for config server
+codeql query run codeql-query-js/locate-config-server.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/config-server.bqrs
+codeql bqrs decode diag-data/$BQRS_DIR_NAME/config-server.bqrs   --format=csv   --output diag-data/petclinic/config-server.csv
+
+# searching for link to github config server if there is one
+codeql query run codeql-query-js/locate-config-server-link.ql   --database codeql-dbs/codeql-db-javascript-petclinic-microservices   --output diag-data/$BQRS_DIR_NAME/config-server-link.bqrs
 codeql bqrs decode diag-data/$BQRS_DIR_NAME/config-server-link.bqrs   --format=csv   --output diag-data/petclinic/config-server-link.csv
 
 # --------------------- JAVASCRIPT BLOCK --------------------- 
