@@ -1,75 +1,15 @@
 from collections import defaultdict
 import sys
 import pandas as pd
+import csv
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from mermaid_constructor import create_node, create_edge, create_type, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE, EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE, REGISTER_IN_DISC_SERVER_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR
+from mermaid_constructor import (create_node, create_edge, create_type, create_link_style, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE,
+                                 EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE,
+                                 FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH, HTTP_REQUESTS_MESSAGE, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH)
 
-
-def build_diag(project_name: str):
-    discovery_server_data = pd.read_csv(
-        f"diag-data/{project_name}/discovery-server.csv", header=None, skiprows=1)
-    discovery_clients_data = pd.read_csv(
-        f"diag-data/{project_name}/discovery-clients.csv", header=None, skiprows=1)
-    load_balanced_requesters_data = pd.read_csv(
-        f"diag-data/{project_name}/eureka-load-balanced.csv", header=None, skiprows=1)
-
-    discovery_servers = discovery_server_data[0].dropna().unique().tolist()
-    discovery_clients = discovery_clients_data[0].dropna().unique().tolist()
-    load_balanced_requesters = load_balanced_requesters_data[0].dropna(
-    ).unique().tolist()
-
-    diag = nx.MultiDiGraph()
-
-    for s in discovery_servers:
-        diag.add_node(s, color="green", size=1000)
-    for c in discovery_clients:
-        diag.add_node(c, color="purple", size=1000)
-    for lbr in load_balanced_requesters:
-        if lbr not in diag.nodes:
-            diag.add_node(lbr, color="blue", size=1000)
-
-    for s in discovery_servers:
-        for c in discovery_clients:
-            diag.add_edge(c, s, color=REGISTER_IN_DISC_SERVER_COLOR,
-                          label=REGISTER_IN_DISC_SERVER_MESSAGE)
-        for ldr in load_balanced_requesters:
-            diag.add_edge(ldr, s, color=FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR,
-                          label=FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE)
-
-    edge_labels = nx.get_edge_attributes(diag, "color")
-    node_colors = [data["color"] for _, data in diag.nodes(data=True)]
-    node_sizes = [data["size"] for _, data in diag.nodes(data=True)]
-
-    pos = nx.spring_layout(diag)
-    plt.figure(figsize=(20, 12))
-    nx.draw_networkx_nodes(
-        diag, pos, node_color=node_colors, node_size=node_sizes)
-    nx.draw_networkx_labels(diag, pos)
-
-    edge_counts = defaultdict(int)
-    edge_labels = {(u, v): data["label"]
-                   for u, v, data in diag.edges(data=True)}
-    for (u, v, data) in diag.edges(data=True):
-        count = edge_counts[(u, v)]
-        rad = 0.15 * (-1)**count
-        edge_counts[(u, v)] += 1
-        nx.draw_networkx_edges(
-            diag,
-            pos,
-            edgelist=[(u, v)],
-            edge_color=data["color"],
-            connectionstyle=f"arc3,rad={rad}",
-            arrows=True,
-            arrowstyle="-|>",
-            min_source_margin=15,
-            min_target_margin=15,
-        )
-    nx.draw_networkx_edge_labels(diag, pos, edge_labels=edge_labels,)
-    # nx.draw(diag, pos, with_labels=True, edge_color=edge_colors, node_color=node_colors, node_size=node_sizes)
-    plt.axis("off")
-    plt.show()
+from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names)
 
 
 def generate_html_visualisation(project_name: str, diag: str):
@@ -113,7 +53,7 @@ def generate_html_visualisation(project_name: str, diag: str):
         print(f"Error with opening HTML file {e}")
 
 
-def build_diag_mermaid(project_name: str):
+'''def build_diag_mermaid(project_name: str):
     discovery_server_data = pd.read_csv(
         f"diag-data/{project_name}/discovery-server.csv", header=None, skiprows=1)
     discovery_clients_data = pd.read_csv(
@@ -145,13 +85,15 @@ def build_diag_mermaid(project_name: str):
         for c in discovery_clients:
             res.append(create_edge(c, s, REGISTER_IN_DISC_SERVER_MESSAGE))
         for lbr in load_balanced_requesters:
-            res.append(create_edge(lbr, s, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE))
-
+            res.append(create_edge(
+                lbr, s, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE))
 
     if len(s) > 0:
-        res.append(create_type(DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE))
+        res.append(create_type(DISCOVERY_SERVER_TYPE,
+                   DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE))
     if len(c) > 0:
-        res.append(create_type(EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE))
+        res.append(create_type(EUREKA_CLIENT_TYPE,
+                   EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE))
     if len(lbr) > 0:
         res.append(create_type("load-balanced requests", 0xcce0ff, 0x003366))
 
@@ -162,7 +104,52 @@ def build_diag_mermaid(project_name: str):
     generate_html_visualisation(project_name, res_string)
 
     # with open("output_diag.mmd", "w") as f:
-    #    f.write(res_string)
+    #    f.write(res_string)'''
+
+def build_diag_mermaid(project_name: str):
+    diag_lines = []
+    edges_count = 0
+    diag_lines.append('graph LR')
+
+    name_to_dir, dir_to_name = map_directories_to_names(f"diag-data/{project_name}/service-names.csv")
+    names_called_by_frontend = map_frontend_rest_requests(f"diag-data/{project_name}/routes-of-services-in-frontend.csv")
+    names_of_eureka_clients = map_services_to_names(f"diag-data/{project_name}/discovery-clients.csv", dir_to_name)
+    names_of_eureka_servers = map_services_to_names(f"diag-data/{project_name}/discovery-server.csv", dir_to_name)
+    names_of_balanced_requesters = map_services_to_names(f"diag-data/{project_name}/eureka-load-balanced.csv", dir_to_name)
+
+    # classes
+    if len(names_of_eureka_servers) > 0:
+        diag_lines.append(create_type(DISCOVERY_SERVER_TYPE,
+                   DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE))
+    if len(names_of_eureka_clients) > 0:
+        diag_lines.append(create_type(EUREKA_CLIENT_TYPE,
+                   EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE))
+
+    # nodes
+    for discovery_server in names_of_eureka_servers:
+        diag_lines.append(create_node(discovery_server, discovery_server, DISCOVERY_SERVER_TYPE))
+    for service in names_of_eureka_clients:
+        diag_lines.append(create_node(service, service, EUREKA_CLIENT_TYPE))
+
+    # edges
+    for server in names_of_eureka_servers:
+        for client in names_of_eureka_clients:
+            diag_lines.append(create_edge(client, server, REGISTER_IN_DISC_SERVER_MESSAGE))
+            edges_count += 1
+    for service in names_called_by_frontend:
+        caller_name = dir_to_name[names_called_by_frontend[service][0]]
+        diag_lines.append(create_edge(caller_name, service, HTTP_REQUESTS_MESSAGE + names_called_by_frontend[service][1]))
+        diag_lines.append(create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH))
+        edges_count += 1
+    for requester in names_of_balanced_requesters:
+        for server in names_of_eureka_servers:
+            diag_lines.append(create_edge(requester, server, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE))
+            diag_lines.append(create_link_style(edges_count, FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH))
+            edges_count += 1
+    
+    diag_string = "\n".join(diag_lines)
+
+    generate_html_visualisation(project_name, diag_string)
 
 
 if __name__ == "__main__":
