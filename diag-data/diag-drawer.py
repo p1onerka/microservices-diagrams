@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 
 from mermaid_constructor import (create_node, create_edge, create_type, create_link_style, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE,
                                  EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE,
-                                 FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH, HTTP_REQUESTS_MESSAGE, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH)
+                                 FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH, HTTP_REQUESTS_MESSAGE, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH, REGISTER_IN_DISC_SERVER_COLOR, REGISTER_IN_DISC_SERVER_WIDTH)
 
-from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names)
+from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names, map_backend_rest_requests)
 
 
 def generate_html_visualisation(project_name: str, diag: str):
@@ -116,6 +116,7 @@ def build_diag_mermaid(project_name: str):
     names_of_eureka_clients = map_services_to_names(f"diag-data/{project_name}/discovery-clients.csv", dir_to_name)
     names_of_eureka_servers = map_services_to_names(f"diag-data/{project_name}/discovery-server.csv", dir_to_name)
     names_of_balanced_requesters = map_services_to_names(f"diag-data/{project_name}/eureka-load-balanced.csv", dir_to_name)
+    names_of_inner_rest_callers = map_backend_rest_requests(f"diag-data/{project_name}/rest-requesters.csv", dir_to_name)
 
     # classes
     if len(names_of_eureka_servers) > 0:
@@ -135,10 +136,11 @@ def build_diag_mermaid(project_name: str):
     for server in names_of_eureka_servers:
         for client in names_of_eureka_clients:
             diag_lines.append(create_edge(client, server, REGISTER_IN_DISC_SERVER_MESSAGE))
+            diag_lines.append(create_link_style(edges_count, REGISTER_IN_DISC_SERVER_COLOR, REGISTER_IN_DISC_SERVER_WIDTH))
             edges_count += 1
     for service in names_called_by_frontend:
         caller_name = dir_to_name[names_called_by_frontend[service][0]]
-        diag_lines.append(create_edge(caller_name, service, HTTP_REQUESTS_MESSAGE + names_called_by_frontend[service][1]))
+        diag_lines.append(create_edge(caller_name, service, f"{HTTP_REQUESTS_MESSAGE}\n{names_called_by_frontend[service][1]}"))
         diag_lines.append(create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH))
         edges_count += 1
     for requester in names_of_balanced_requesters:
@@ -146,6 +148,10 @@ def build_diag_mermaid(project_name: str):
             diag_lines.append(create_edge(requester, server, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE))
             diag_lines.append(create_link_style(edges_count, FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH))
             edges_count += 1
+    for requester, requester_file, requested in names_of_inner_rest_callers:
+        diag_lines.append(create_edge(requester, requested, f"{HTTP_REQUESTS_MESSAGE}\n{requester_file}"))
+        diag_lines.append(create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH))
+        edges_count += 1
     
     diag_string = "\n".join(diag_lines)
 
