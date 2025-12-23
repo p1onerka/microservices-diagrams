@@ -1,7 +1,7 @@
 import java
 
-from MethodCall mc
-where mc.getMethod().getName() = "get"
-//select mc.getReceiverType().getLocation()
-select mc.getCompilationUnit(), mc.getCompilationUnit().getRelativePath()
-//select mc.getCompilationUnit(), mc.getCompilationUnit().getPackage()
+from MethodCall mc, StringLiteral address
+where (mc.getMethod().getName() = "get" or mc.getMethod().getName() = "post") and
+  address.getCompilationUnit() = mc.getCompilationUnit() and
+  address.getValue().indexOf("http://") >= 0
+select mc.getCompilationUnit(), mc.getCompilationUnit().getRelativePath(), address.getValue()
