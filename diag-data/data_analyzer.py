@@ -3,6 +3,8 @@ import re
 
 YAML_CONFIG_MASK = r"(?:.*/)?([^/]+)/src/main/resources/"
 FRONTEND_REST_REQUESTS_MASK = r"(?:.*/)?([^/]+)/src/main/resources/.*/([^/]+)$"
+INSIDE_REST_REQUESTS_MASK = r"http://([^/]+)/.*"
+FILE_MASK = r"(?:.*/)?([^/]+)"
 SERVICE_MASK = r"(?:.*/)?([^/]+)/src/main/java/org/"
 
 class CorruptedCodeQLDataException(Exception):
@@ -74,7 +76,8 @@ def map_frontend_rest_requests(path: str) -> dict[str, tuple[str, str]]:
                 microservice_name = row[1].strip('"')
                 microservice_caller_file_path = row[4].strip('"')
                 match = extract_name_with_mask(microservice_caller_file_path, FRONTEND_REST_REQUESTS_MASK)
-                names_to_caller_dir_and_file[microservice_name] = (match.group(1), match.group(2))
+                if match:
+                    names_to_caller_dir_and_file[microservice_name] = (match.group(1), match.group(2))
 
     except FileNotFoundError:
         print(f"File not found: {path}")
@@ -103,7 +106,8 @@ def map_services_to_names(path: str, dir_to_name: dict[str, str]) -> dict[str, s
                     raise CorruptedCodeQLDataException(path, f"there should be exactly 5 columns in this table, but there is {len(row)}")
                 microservice_path = row[1].strip('"')
                 microservice_dir = extract_name_with_mask(microservice_path, SERVICE_MASK).group(1)
-                services_with_names[dir_to_name[microservice_dir]] = microservice_dir
+                if microservice_dir:
+                    services_with_names[dir_to_name[microservice_dir]] = microservice_dir
 
     except FileNotFoundError:
         print(f"File not found: {path}")
@@ -116,3 +120,28 @@ def map_services_to_names(path: str, dir_to_name: dict[str, str]) -> dict[str, s
 #name_to_dir, dir_to_name = map_directories_to_names("diag-data/petclinic/service-names.csv")
 #print(map_services_to_names("diag-data/petclinic/discovery-clients.csv", dir_to_name))
 #print(map_services_to_names("diag-data/petclinic/discovery-server.csv", dir_to_name))
+
+def map_backend_rest_requests(path: str, dir_to_name: dict[str, str]) -> set[tuple[str, str, str]]:
+    caller_to_callee = set()
+    try:
+        with open(path, "r") as file:
+            csv_reader = csv.reader(file)
+            _ = next(csv_reader, None)
+            for row in csv_reader:
+                if len(row) < 3:
+                    raise CorruptedCodeQLDataException(path, f"there should be exactly 3 columns in this table, but there is {len(row)}")
+                requester_path = row[1].strip('"')
+                requester_dir = extract_name_with_mask(requester_path, SERVICE_MASK).group(1)
+                requester_file = extract_name_with_mask(requester_path, FILE_MASK).group(1)
+                request_link = row[2].strip('"')
+                requested_service = extract_name_with_mask(request_link, INSIDE_REST_REQUESTS_MASK).group(1)
+                if requester_dir and requested_service:
+                    requester_name = dir_to_name[requester_dir]
+                    caller_to_callee.add((requester_name, requester_file, requested_service))
+    except FileNotFoundError:
+        print(f"File not found: {path}")
+    except CorruptedCodeQLDataException as e:
+        print(e)
+    except Exception as e:
+        print(f"Exception while reading file {path}: {e}")
+    return caller_to_callee
