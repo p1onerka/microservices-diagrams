@@ -5,11 +5,11 @@ import csv
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from mermaid_constructor import (create_node, create_edge, create_type, create_link_style, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE,
-                                 EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE,
+from mermaid_constructor import (create_node, create_edge, create_type, create_link_style, create_link, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE,
+                                 EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE, CONFIG_SERVER_DESCRIPTION,
                                  FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH, HTTP_REQUESTS_MESSAGE, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH, REGISTER_IN_DISC_SERVER_COLOR, REGISTER_IN_DISC_SERVER_WIDTH)
 
-from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names, map_backend_rest_requests)
+from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names, map_backend_rest_requests, extract_config_server, map_config_server_to_link)
 
 
 def generate_html_visualisation(project_name: str, diag: str):
@@ -117,6 +117,8 @@ def build_diag_mermaid(project_name: str):
     names_of_eureka_servers = map_services_to_names(f"diag-data/{project_name}/discovery-server.csv", dir_to_name)
     names_of_balanced_requesters = map_services_to_names(f"diag-data/{project_name}/eureka-load-balanced.csv", dir_to_name)
     names_of_inner_rest_callers = map_backend_rest_requests(f"diag-data/{project_name}/rest-requesters.csv", dir_to_name)
+    names_of_config_servers = extract_config_server(f"diag-data/{project_name}/config-server.csv")
+    config_servers_to_link = map_config_server_to_link(f"diag-data/{project_name}/config-server-link.csv", names_of_config_servers)
 
     # classes
     if len(names_of_eureka_servers) > 0:
@@ -125,12 +127,26 @@ def build_diag_mermaid(project_name: str):
     if len(names_of_eureka_clients) > 0:
         diag_lines.append(create_type(EUREKA_CLIENT_TYPE,
                    EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE))
+    if len(names_of_config_servers) > 0:
+        diag_lines.append(create_type(CONFIG_SERVER_TYPE,
+                   CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE))
 
     # nodes
     for discovery_server in names_of_eureka_servers:
         diag_lines.append(create_node(discovery_server, discovery_server, DISCOVERY_SERVER_TYPE))
     for service in names_of_eureka_clients:
         diag_lines.append(create_node(service, service, EUREKA_CLIENT_TYPE))
+    for config_server in names_of_config_servers:
+        #diag_lines.append(create_node(config_server, config_server, CONFIG_SERVER_TYPE))
+        #if config_servers_to_link[config_server]:
+        #    link = config_servers_to_link[config_server]
+        #    diag_lines.append(create_link(config_server, link))
+        diag_lines.append(f'subgraph LEGEND["{CONFIG_SERVER_DESCRIPTION}"]\ndirection LR\n')
+        diag_lines.append(create_node(config_server, config_server, CONFIG_SERVER_TYPE))
+        if config_servers_to_link[config_server]:
+            link = config_servers_to_link[config_server]
+            diag_lines.append(create_link(config_server, link))
+        diag_lines.append("end")
 
     # edges
     for server in names_of_eureka_servers:
