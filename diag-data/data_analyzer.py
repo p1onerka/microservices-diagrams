@@ -5,7 +5,7 @@ YAML_CONFIG_MASK = r"(?:.*/)?([^/]+)/src/main/resources/"
 FRONTEND_REST_REQUESTS_MASK = r"(?:.*/)?([^/]+)/src/main/resources/.*/([^/]+)$"
 INSIDE_REST_REQUESTS_MASK = r"http://([^/]+)/.*"
 FILE_MASK = r"(?:.*/)?([^/]+)"
-SERVICE_MASK = r"(?:.*/)?([^/]+)/src/main/java/org/"
+SERVICE_MASK = r"(?:.*/)?([^/]+)/src/main/java/"
 
 class CorruptedCodeQLDataException(Exception):
     def __init__(self, file_path: str, message: str):
@@ -114,7 +114,8 @@ def map_services_to_names(path: str, dir_to_name: dict[str, str], column: int = 
                 microservice_dir_match = extract_name_with_mask(microservice_path, SERVICE_MASK)
                 if microservice_dir_match:
                     microservice_dir = microservice_dir_match.group(1)
-                    services_with_names[dir_to_name[microservice_dir]] = microservice_dir
+                    if dir_to_name.get(microservice_dir):
+                        services_with_names[dir_to_name[microservice_dir]] = microservice_dir
 
     except FileNotFoundError:
         print(f"File not found: {path}")

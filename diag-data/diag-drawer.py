@@ -143,7 +143,7 @@ def build_diag_mermaid(project_name: str):
         #    diag_lines.append(create_link(config_server, link))
         diag_lines.append(f'subgraph LEGEND["{CONFIG_SERVER_DESCRIPTION}"]\ndirection LR\n')
         diag_lines.append(create_node(config_server, config_server, CONFIG_SERVER_TYPE))
-        if config_servers_to_link[config_server]:
+        if config_servers_to_link.get(config_server):
             link = config_servers_to_link[config_server]
             diag_lines.append(create_link(config_server, link))
         diag_lines.append("end")
