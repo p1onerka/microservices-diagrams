@@ -1,8 +1,9 @@
 from diag_drawer import build_diag_mermaid
 
+
 def test_complex_diagram_building():
     diag = build_diag_mermaid("tests/test_query_data")
-    expected = '''graph LR
+    expected = """graph LR
 classDef discovery_server fill:#79eaec,stroke:#55b8b9,stroke-width:2px;
 classDef eureka_client fill:#8ae692,stroke:#55b95e,stroke-width:2px;
 classDef config_server fill:#d8a059,stroke:#956e3d,stroke-width:2px;
@@ -56,5 +57,5 @@ AIDataProvider.java| customers-service
 linkStyle 13 stroke:#4a4599,stroke-width:5px;
 genai-service -->|http requests from 
 VectorStoreController.java| vets-service
-linkStyle 14 stroke:#4a4599,stroke-width:5px;'''
+linkStyle 14 stroke:#4a4599,stroke-width:5px;"""
     assert diag == expected

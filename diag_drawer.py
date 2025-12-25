@@ -1,14 +1,44 @@
 import sys
 
-from mermaid_constructor import (create_node, create_edge, create_type, create_link_style, create_link, CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE, DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE,
-                                 EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE, REGISTER_IN_DISC_SERVER_MESSAGE, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE, CONFIG_SERVER_DESCRIPTION,
-                                 FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH, HTTP_REQUESTS_MESSAGE, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH, REGISTER_IN_DISC_SERVER_COLOR, REGISTER_IN_DISC_SERVER_WIDTH)
+from mermaid_constructor import (
+    create_node,
+    create_edge,
+    create_type,
+    create_link_style,
+    create_link,
+    CONFIG_SERVER_TYPE,
+    CONFIG_SERVER_FILL,
+    CONFIG_SERVER_STROKE,
+    DISCOVERY_SERVER_TYPE,
+    DISCOVERY_SERVER_FILL,
+    DISCOVERY_SERVER_STROKE,
+    EUREKA_CLIENT_TYPE,
+    EUREKA_CLIENT_FILL,
+    EUREKA_CLIENT_STROKE,
+    REGISTER_IN_DISC_SERVER_MESSAGE,
+    FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE,
+    CONFIG_SERVER_DESCRIPTION,
+    FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR,
+    FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH,
+    HTTP_REQUESTS_MESSAGE,
+    HTTP_REQUESTS_COLOR,
+    HTTP_REQUESTS_WIDTH,
+    REGISTER_IN_DISC_SERVER_COLOR,
+    REGISTER_IN_DISC_SERVER_WIDTH,
+)
 
-from data_analyzer import (map_directories_to_names, map_frontend_rest_requests, map_services_to_names, map_backend_rest_requests, extract_config_server, map_config_server_to_link)
+from data_analyzer import (
+    map_directories_to_names,
+    map_frontend_rest_requests,
+    map_services_to_names,
+    map_backend_rest_requests,
+    extract_config_server,
+    map_config_server_to_link,
+)
 
 
 def generate_html_visualisation(project_name: str, diag: str):
-    HTML_PAGE_TEMPLATE = f'''
+    HTML_PAGE_TEMPLATE = f"""
     <!DOCTYPE html>
     <html lang="ru">
     <head>
@@ -40,7 +70,7 @@ def generate_html_visualisation(project_name: str, diag: str):
     <body>
         <pre class="mermaid">{diag}</pre>
     </body>
-    </html>'''
+    </html>"""
     try:
         with open(f"{project_name}-output-diag-page.html", "w") as f:
             f.write(HTML_PAGE_TEMPLATE)
@@ -51,35 +81,56 @@ def generate_html_visualisation(project_name: str, diag: str):
 def build_diag_mermaid(project_name: str) -> str:
     diag_lines = []
     edges_count = 0
-    diag_lines.append('graph LR')
+    diag_lines.append("graph LR")
 
     _, dir_to_name = map_directories_to_names(f"{project_name}/service-names.csv")
-    names_called_by_frontend = map_frontend_rest_requests(f"{project_name}/routes-of-services-in-frontend.csv")
-    names_of_eureka_clients = map_services_to_names(f"{project_name}/discovery-clients.csv", dir_to_name)
-    names_of_eureka_servers = map_services_to_names(f"{project_name}/discovery-server.csv", dir_to_name)
-    names_of_balanced_requesters = map_services_to_names(f"{project_name}/eureka-load-balanced.csv", dir_to_name)
-    names_of_inner_rest_callers = map_backend_rest_requests(f"{project_name}/rest-requesters.csv", dir_to_name)
+    names_called_by_frontend = map_frontend_rest_requests(
+        f"{project_name}/routes-of-services-in-frontend.csv"
+    )
+    names_of_eureka_clients = map_services_to_names(
+        f"{project_name}/discovery-clients.csv", dir_to_name
+    )
+    names_of_eureka_servers = map_services_to_names(
+        f"{project_name}/discovery-server.csv", dir_to_name
+    )
+    names_of_balanced_requesters = map_services_to_names(
+        f"{project_name}/eureka-load-balanced.csv", dir_to_name
+    )
+    names_of_inner_rest_callers = map_backend_rest_requests(
+        f"{project_name}/rest-requesters.csv", dir_to_name
+    )
     names_of_config_servers = extract_config_server(f"{project_name}/config-server.csv")
-    config_servers_to_link = map_config_server_to_link(f"{project_name}/config-server-link.csv", names_of_config_servers)
+    config_servers_to_link = map_config_server_to_link(
+        f"{project_name}/config-server-link.csv", names_of_config_servers
+    )
 
     # classes
     if len(names_of_eureka_servers) > 0:
-        diag_lines.append(create_type(DISCOVERY_SERVER_TYPE,
-                   DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE))
+        diag_lines.append(
+            create_type(
+                DISCOVERY_SERVER_TYPE, DISCOVERY_SERVER_FILL, DISCOVERY_SERVER_STROKE
+            )
+        )
     if len(names_of_eureka_clients) > 0:
-        diag_lines.append(create_type(EUREKA_CLIENT_TYPE,
-                   EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE))
+        diag_lines.append(
+            create_type(EUREKA_CLIENT_TYPE, EUREKA_CLIENT_FILL, EUREKA_CLIENT_STROKE)
+        )
     if len(names_of_config_servers) > 0:
-        diag_lines.append(create_type(CONFIG_SERVER_TYPE,
-                   CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE))
+        diag_lines.append(
+            create_type(CONFIG_SERVER_TYPE, CONFIG_SERVER_FILL, CONFIG_SERVER_STROKE)
+        )
 
     # nodes
     for discovery_server in sorted(names_of_eureka_servers):
-        diag_lines.append(create_node(discovery_server, discovery_server, DISCOVERY_SERVER_TYPE))
+        diag_lines.append(
+            create_node(discovery_server, discovery_server, DISCOVERY_SERVER_TYPE)
+        )
     for service in sorted(names_of_eureka_clients):
         diag_lines.append(create_node(service, service, EUREKA_CLIENT_TYPE))
     for config_server in sorted(names_of_config_servers):
-        diag_lines.append(f'subgraph LEGEND["{CONFIG_SERVER_DESCRIPTION}"]\ndirection LR\n')
+        diag_lines.append(
+            f'subgraph LEGEND["{CONFIG_SERVER_DESCRIPTION}"]\ndirection LR\n'
+        )
         diag_lines.append(create_node(config_server, config_server, CONFIG_SERVER_TYPE))
         if config_servers_to_link.get(config_server):
             link = config_servers_to_link[config_server]
@@ -89,24 +140,54 @@ def build_diag_mermaid(project_name: str) -> str:
     # edges
     for server in sorted(names_of_eureka_servers):
         for client in names_of_eureka_clients:
-            diag_lines.append(create_edge(client, server, REGISTER_IN_DISC_SERVER_MESSAGE))
-            diag_lines.append(create_link_style(edges_count, REGISTER_IN_DISC_SERVER_COLOR, REGISTER_IN_DISC_SERVER_WIDTH))
+            diag_lines.append(
+                create_edge(client, server, REGISTER_IN_DISC_SERVER_MESSAGE)
+            )
+            diag_lines.append(
+                create_link_style(
+                    edges_count,
+                    REGISTER_IN_DISC_SERVER_COLOR,
+                    REGISTER_IN_DISC_SERVER_WIDTH,
+                )
+            )
             edges_count += 1
     for service in sorted(names_called_by_frontend):
         caller_name = dir_to_name[names_called_by_frontend[service][0]]
-        diag_lines.append(create_edge(caller_name, service, f"{HTTP_REQUESTS_MESSAGE}\n{names_called_by_frontend[service][1]}"))
-        diag_lines.append(create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH))
+        diag_lines.append(
+            create_edge(
+                caller_name,
+                service,
+                f"{HTTP_REQUESTS_MESSAGE}\n{names_called_by_frontend[service][1]}",
+            )
+        )
+        diag_lines.append(
+            create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH)
+        )
         edges_count += 1
     for requester in sorted(names_of_balanced_requesters):
         for server in names_of_eureka_servers:
-            diag_lines.append(create_edge(requester, server, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE))
-            diag_lines.append(create_link_style(edges_count, FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR, FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH))
+            diag_lines.append(
+                create_edge(requester, server, FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE)
+            )
+            diag_lines.append(
+                create_link_style(
+                    edges_count,
+                    FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR,
+                    FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH,
+                )
+            )
             edges_count += 1
     for requester, requester_file, requested in sorted(names_of_inner_rest_callers):
-        diag_lines.append(create_edge(requester, requested, f"{HTTP_REQUESTS_MESSAGE}\n{requester_file}"))
-        diag_lines.append(create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH))
+        diag_lines.append(
+            create_edge(
+                requester, requested, f"{HTTP_REQUESTS_MESSAGE}\n{requester_file}"
+            )
+        )
+        diag_lines.append(
+            create_link_style(edges_count, HTTP_REQUESTS_COLOR, HTTP_REQUESTS_WIDTH)
+        )
         edges_count += 1
-    
+
     diag_string = "\n".join(diag_lines)
 
     return diag_string
