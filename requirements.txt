@@ -1,0 +1,7 @@
+pytest
+black
+flake8
+pytest-cov
+sphinx
+sphinx-rtd-theme
+myst-parser

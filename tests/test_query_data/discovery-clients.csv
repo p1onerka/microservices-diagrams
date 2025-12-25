@@ -1,0 +1,7 @@
+"c","col1"
+"SpringBootAdminApplication","spring-petclinic-admin-server/src/main/java/org/springframework/samples/petclinic/admin/SpringBootAdminApplication.java"
+"ApiGatewayApplication","spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/ApiGatewayApplication.java"
+"CustomersServiceApplication","spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/CustomersServiceApplication.java"
+"GenAIServiceApplication","spring-petclinic-genai-service/src/main/java/org/springframework/samples/petclinic/genai/GenAIServiceApplication.java"
+"VetsServiceApplication","spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/VetsServiceApplication.java"
+"VisitsServiceApplication","spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/VisitsServiceApplication.java"

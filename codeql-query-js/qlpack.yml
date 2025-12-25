@@ -1,8 +1,8 @@
 ---
 library: false
 warnOnImplicitThis: false
-name: user/test-queries
+name: user/javascript-queries
 version: 0.0.1
 dependencies:
-  codeql/java-all: '*'
+  codeql/javascript-all: ^2.6.18
   codeql/util: ^2.0.22

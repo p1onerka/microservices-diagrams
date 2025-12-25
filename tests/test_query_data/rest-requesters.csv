@@ -1,0 +1,5 @@
+"col0","col1","col2"
+"CustomersServiceClient","spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java","http://customers-service/owners/{ownerId}"
+"VisitsServiceClient","spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VisitsServiceClient.java","http://visits-service/"
+"AIDataProvider","spring-petclinic-genai-service/src/main/java/org/springframework/samples/petclinic/genai/AIDataProvider.java","http://customers-service/"
+"VectorStoreController","spring-petclinic-genai-service/src/main/java/org/springframework/samples/petclinic/genai/VectorStoreController.java","http://vets-service/"
