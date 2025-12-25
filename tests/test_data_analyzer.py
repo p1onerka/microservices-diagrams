@@ -2,7 +2,7 @@ import csv
 import sys
 import os
 import pytest
-from diag_data.data_analyzer import (YAML_CONFIG_MASK, FRONTEND_REST_REQUESTS_MASK, INSIDE_REST_REQUESTS_MASK,
+from data_analyzer import (YAML_CONFIG_MASK, FRONTEND_REST_REQUESTS_MASK, INSIDE_REST_REQUESTS_MASK,
                                      FILE_MASK, SERVICE_MASK, CorruptedCodeQLDataException, extract_name_with_mask,
                                      map_backend_rest_requests, map_config_server_to_link, map_directories_to_names,
                                      map_frontend_rest_requests, map_services_to_names, extract_config_server)

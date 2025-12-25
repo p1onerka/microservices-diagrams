@@ -1,6 +1,6 @@
 import sys
 import os
-from diag_data.mermaid_constructor import create_edge, create_link, create_link_style, create_node, create_type
+from mermaid_constructor import create_edge, create_link, create_link_style, create_node, create_type
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
