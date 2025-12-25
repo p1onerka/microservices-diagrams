@@ -109,14 +109,22 @@ def build_diag_mermaid(project_name: str):
     edges_count = 0
     diag_lines.append('graph LR')
 
-    name_to_dir, dir_to_name = map_directories_to_names(f"diag_data/{project_name}/service-names.csv")
+    '''name_to_dir, dir_to_name = map_directories_to_names(f"diag_data/{project_name}/service-names.csv")
     names_called_by_frontend = map_frontend_rest_requests(f"diag_data/{project_name}/routes-of-services-in-frontend.csv")
     names_of_eureka_clients = map_services_to_names(f"diag_data/{project_name}/discovery-clients.csv", dir_to_name)
     names_of_eureka_servers = map_services_to_names(f"diag_data/{project_name}/discovery-server.csv", dir_to_name)
     names_of_balanced_requesters = map_services_to_names(f"diag_data/{project_name}/eureka-load-balanced.csv", dir_to_name)
     names_of_inner_rest_callers = map_backend_rest_requests(f"diag_data/{project_name}/rest-requesters.csv", dir_to_name)
     names_of_config_servers = extract_config_server(f"diag_data/{project_name}/config-server.csv")
-    config_servers_to_link = map_config_server_to_link(f"diag_data/{project_name}/config-server-link.csv", names_of_config_servers)
+    config_servers_to_link = map_config_server_to_link(f"diag_data/{project_name}/config-server-link.csv", names_of_config_servers)'''
+    name_to_dir, dir_to_name = map_directories_to_names(f"{project_name}/service-names.csv")
+    names_called_by_frontend = map_frontend_rest_requests(f"{project_name}/routes-of-services-in-frontend.csv")
+    names_of_eureka_clients = map_services_to_names(f"{project_name}/discovery-clients.csv", dir_to_name)
+    names_of_eureka_servers = map_services_to_names(f"{project_name}/discovery-server.csv", dir_to_name)
+    names_of_balanced_requesters = map_services_to_names(f"{project_name}/eureka-load-balanced.csv", dir_to_name)
+    names_of_inner_rest_callers = map_backend_rest_requests(f"{project_name}/rest-requesters.csv", dir_to_name)
+    names_of_config_servers = extract_config_server(f"{project_name}/config-server.csv")
+    config_servers_to_link = map_config_server_to_link(f"{project_name}/config-server-link.csv", names_of_config_servers)
 
     # classes
     if len(names_of_eureka_servers) > 0:

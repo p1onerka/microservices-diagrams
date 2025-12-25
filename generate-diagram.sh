@@ -28,56 +28,56 @@ if [ ! -d "$JS_DB_PATH" ]; then
 fi
 
 echo "Collecting data about services"
-mkdir -p "diag_data/$PROJECT_NAME"
-mkdir -p "diag_data/$BQRS_DIR_NAME"
+mkdir -p "$PROJECT_NAME"
+mkdir -p "$BQRS_DIR_NAME"
 
 # ------------------------ JAVA BLOCK ------------------------ 
 
 # searching for eureka disovery clients
-codeql query run codeql-query/eureka-discovery-clients.ql   --database $JAVA_DB_PATH   --output diag_data/$BQRS_DIR_NAME/discovery-clients.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/discovery-clients.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/discovery-clients.csv
+codeql query run codeql-query/eureka-discovery-clients.ql   --database $JAVA_DB_PATH   --output $BQRS_DIR_NAME/discovery-clients.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/discovery-clients.bqrs   --format=csv   --output $PROJECT_NAME/discovery-clients.csv
 
 # searching for eureka discovery server
-codeql query run codeql-query/eureka-discovery-server.ql   --database $JAVA_DB_PATH   --output diag_data/$BQRS_DIR_NAME/discovery-server.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/discovery-server.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/discovery-server.csv
+codeql query run codeql-query/eureka-discovery-server.ql   --database $JAVA_DB_PATH   --output $BQRS_DIR_NAME/discovery-server.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/discovery-server.bqrs   --format=csv   --output $PROJECT_NAME/discovery-server.csv
 
 # searching for load-balanced requesters
-codeql query run codeql-query/eureka-load-balanced.ql   --database $JAVA_DB_PATH   --output diag_data/$BQRS_DIR_NAME/eureka-load-balanced.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/eureka-load-balanced.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/eureka-load-balanced.csv
+codeql query run codeql-query/eureka-load-balanced.ql   --database $JAVA_DB_PATH   --output $BQRS_DIR_NAME/eureka-load-balanced.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/eureka-load-balanced.bqrs   --format=csv   --output $PROJECT_NAME/eureka-load-balanced.csv
 
 # searching for REST requesters
-codeql query run codeql-query/rest-requesters.ql   --database $JAVA_DB_PATH   --output diag_data/$BQRS_DIR_NAME/rest-requesters.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/rest-requesters.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/rest-requesters.csv
+codeql query run codeql-query/rest-requesters.ql   --database $JAVA_DB_PATH   --output $BQRS_DIR_NAME/rest-requesters.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/rest-requesters.bqrs   --format=csv   --output $PROJECT_NAME/rest-requesters.csv
 
 # ---------------------- CONFIG BLOCK ---------------------- 
 
 # searching for app names in Eureka (for mapping them with REST requests later)
-codeql query run codeql-query-js/locate-service-names.ql   --database $JS_DB_PATH   --output diag_data/$BQRS_DIR_NAME/service-names.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/service-names.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/service-names.csv
+codeql query run codeql-query-js/locate-service-names.ql   --database $JS_DB_PATH   --output $BQRS_DIR_NAME/service-names.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/service-names.bqrs   --format=csv   --output $PROJECT_NAME/service-names.csv
 
 # searching for config server
-codeql query run codeql-query-js/locate-config-server.ql   --database $JS_DB_PATH   --output diag_data/$BQRS_DIR_NAME/config-server.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/config-server.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/config-server.csv
+codeql query run codeql-query-js/locate-config-server.ql   --database $JS_DB_PATH   --output $BQRS_DIR_NAME/config-server.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/config-server.bqrs   --format=csv   --output $PROJECT_NAME/config-server.csv
 
 # searching for link to github config server if there is one
-codeql query run codeql-query-js/locate-config-server-link.ql   --database $JS_DB_PATH   --output diag_data/$BQRS_DIR_NAME/config-server-link.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/config-server-link.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/config-server-link.csv
+codeql query run codeql-query-js/locate-config-server-link.ql   --database $JS_DB_PATH   --output $BQRS_DIR_NAME/config-server-link.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/config-server-link.bqrs   --format=csv   --output $PROJECT_NAME/config-server-link.csv
 
 # --------------------- JAVASCRIPT BLOCK --------------------- 
 
 # searching for GET requests in javascript code
-codeql query run codeql-query-js/rest-requests-javascript-fontend.ql   --database $JS_DB_PATH   --output diag_data/$BQRS_DIR_NAME/js-gets.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/js-gets.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/js-gets.csv 
+codeql query run codeql-query-js/rest-requests-javascript-fontend.ql   --database $JS_DB_PATH   --output $BQRS_DIR_NAME/js-gets.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/js-gets.bqrs   --format=csv   --output $PROJECT_NAME/js-gets.csv 
 
 # searching for routes of services in frontend
-codeql query run codeql-query-js/locate-routes-of-services-in-frontend.ql   --database $JS_DB_PATH   --output diag_data/$BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs
-codeql bqrs decode diag_data/$BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs   --format=csv   --output diag_data/$PROJECT_NAME/routes-of-services-in-frontend.csv 
+codeql query run codeql-query-js/locate-routes-of-services-in-frontend.ql   --database $JS_DB_PATH   --output $BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs
+codeql bqrs decode $BQRS_DIR_NAME/routes-of-services-in-frontend.bqrs   --format=csv   --output $PROJECT_NAME/routes-of-services-in-frontend.csv 
 
 echo "Building diagram"
-if [ -d "diag_data/.venv" ]; then
+if [ -d ".venv" ]; then
     (
-        source diag_data/.venv/bin/activate
-        python3 diag_data/diag_drawer.py "$PROJECT_NAME"
+        source .venv/bin/activate
+        python3 diag_drawer.py "$PROJECT_NAME"
     )
 else
     (
@@ -86,6 +86,6 @@ else
         source .venv/bin/activate
         #pip3 install pandas networkx matplotlib
         cd ..
-        python3 diag_data/diag_drawer.py "$PROJECT_NAME"
+        python3 diag_drawer.py "$PROJECT_NAME"
     )
 fi
