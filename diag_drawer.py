@@ -38,11 +38,11 @@ from data_analyzer import (
 
 
 def generate_html_visualisation(project_name: str, diag: str):
-    '''
-        A function for generating output HTML document with diagram.
-        Contains template of the document, in which diagram will be put.
-        Requires `<project name>` as argument for naming the output file correspondingly.
-    '''
+    """
+    A function for generating output HTML document with diagram.
+    Contains template of the document, in which diagram will be put.
+    Requires `<project name>` as argument for naming the output file correspondingly.
+    """
     HTML_PAGE_TEMPLATE = f"""
     <!DOCTYPE html>
     <html lang="ru">
@@ -85,15 +85,15 @@ def generate_html_visualisation(project_name: str, diag: str):
 
 def build_diag_mermaid(project_name: str) -> str:
     """
-        A function that binds two parts of the tool: 
-        processing the data fetched via CodeQL queries and presenting it via Mermaid diagram in HTML doc.
-        It searches for all tables with queries results, calls `Data Analyzer` methods to map data accross the tables
-        and creates diagram entities via `Mermaid Constructor` module functions.
-        In more detail, all entities being created are the following:
+    A function that binds two parts of the tool:
+    processing the data fetched via CodeQL queries and presenting it via Mermaid diagram in HTML doc.
+    It searches for all tables with queries results, calls `Data Analyzer` methods to map data accross the tables
+    and creates diagram entities via `Mermaid Constructor` module functions.
+    In more detail, all entities being created are the following:
 
-        1. Classes -- for describing types of entities, eg. services, configuration servers...
-        2. Nodes -- for describing a single source project entity. Belongs to one of the previously declared classes
-        3. Edges -- for describing any kind of relations between entities, eg. REST-requests, configuration fetching... Some of them have unique styles for better readability
+    1. Classes -- for describing types of entities, eg. services, configuration servers...
+    2. Nodes -- for describing a single source project entity. Belongs to one of the previously declared classes
+    3. Edges -- for describing any kind of relations between entities, eg. REST-requests, configuration fetching... Some of them have unique styles for better readability
     """
     diag_lines = []
     edges_count = 0

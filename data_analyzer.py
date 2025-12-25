@@ -10,9 +10,10 @@ SERVICE_MASK = r"(?:.*/)?([^/]+)/src/main/java/"
 
 class CorruptedCodeQLDataException(Exception):
     """
-        An exception for case when table with CodeQL query results behaves unexpected,
-        eg. has a different numbers of columns than expected.
+    An exception for case when table with CodeQL query results behaves unexpected,
+    eg. has a different numbers of columns than expected.
     """
+
     def __init__(self, file_path: str, message: str):
         super().__init__(
             f"CodeQL data in file {file_path} behaves unexpectedly: {message}"
@@ -21,10 +22,10 @@ class CorruptedCodeQLDataException(Exception):
 
 def extract_name_with_mask(path: str, mask: str) -> re.Match[str] | None:
     """
-        A function for extracting part of the string via SQL-like regular expressions.
-        Is used in other functions for finding patterns in strings, eg. when searching for
-        module of file by its relative path (in that case, mask should look like this 
-        `"(?:.*/)?([^/]+)/src/main/java/"`. For more info about mask syntax, check module `re`). 
+    A function for extracting part of the string via SQL-like regular expressions.
+    Is used in other functions for finding patterns in strings, eg. when searching for
+    module of file by its relative path (in that case, mask should look like this
+    `"(?:.*/)?([^/]+)/src/main/java/"`. For more info about mask syntax, check module `re`).
     """
     match = re.match(mask, path)
     if match:
@@ -34,8 +35,8 @@ def extract_name_with_mask(path: str, mask: str) -> re.Match[str] | None:
 
 def map_directories_to_names(path: str) -> tuple[dict[str, str], dict[str, str]]:
     """
-        A function for mapping the home directories of services to their names fetched from configuration JSONs.
-        Output consists of dict `({service name : service dir}, {service dir : service name})`.
+    A function for mapping the home directories of services to their names fetched from configuration JSONs.
+    Output consists of dict `({service name : service dir}, {service dir : service name})`.
     """
     name_to_dir = {}
     dir_to_name = {}
@@ -73,8 +74,8 @@ def map_directories_to_names(path: str) -> tuple[dict[str, str], dict[str, str]]
 
 def map_frontend_rest_requests(path: str) -> dict[str, tuple[str, str]]:
     """
-        A function for mapping inner names of services to REST-requests made from javascript frontend.
-        Output consists of dict `{callee service name : (caller dir, caller file)}`.
+    A function for mapping inner names of services to REST-requests made from javascript frontend.
+    Output consists of dict `{callee service name : (caller dir, caller file)}`.
     """
     names_to_caller_dir_and_file = {}
     try:
@@ -114,8 +115,8 @@ def map_services_to_names(
     path: str, dir_to_name: dict[str, str], column: int = 1
 ) -> dict[str, str]:
     """
-        A function for extracting service home dir from path and mapping it to one of the previously extracted names.
-        Output consists of dict `{service name : service dir}`.
+    A function for extracting service home dir from path and mapping it to one of the previously extracted names.
+    Output consists of dict `{service name : service dir}`.
     """
     services_with_names = {}
     try:
@@ -155,8 +156,8 @@ def map_backend_rest_requests(
     path: str, dir_to_name: dict[str, str]
 ) -> set[tuple[str, str, str]]:
     """
-        A function for mapping backend REST-requests (made from Java code) to the names of caller and callee.
-        Output consists of dict `{(caller name, caller file, callee name)}`.
+    A function for mapping backend REST-requests (made from Java code) to the names of caller and callee.
+    Output consists of dict `{(caller name, caller file, callee name)}`.
     """
     caller_to_callee = set()
     try:
@@ -204,8 +205,8 @@ def map_backend_rest_requests(
 
 def extract_config_server(path: str) -> set[str]:
     """
-        A function for extracting home directory of configuration server (or servers).
-        Output consists of `{config server dir}`.
+    A function for extracting home directory of configuration server (or servers).
+    Output consists of `{config server dir}`.
     """
     config_servers = set()
     try:
@@ -229,8 +230,8 @@ def extract_config_server(path: str) -> set[str]:
 
 def map_config_server_to_link(path: str, servers: set[str]) -> dict[str, str]:
     """
-        A function for mapping configuration server home dir to its main server on github, in case there is one.
-        Output consists of dict `{config server dir : config server link on github}`.
+    A function for mapping configuration server home dir to its main server on github, in case there is one.
+    Output consists of dict `{config server dir : config server link on github}`.
     """
     name_to_link = {}
     try:
