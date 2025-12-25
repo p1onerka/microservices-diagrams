@@ -1,0 +1,4 @@
+"col0","call","s","col3"
+"spring-petclinic-api-gateway/src/main/resources/static/scripts/owner-list/owner-list.controller.js","$http.g ... wners')","'api/cu ... owners'","api/customer/owners"
+"spring-petclinic-api-gateway/src/main/resources/static/scripts/pet-form/pet-form.controller.js","$http.g ... Types')","'api/cu ... tTypes'","api/customer/petTypes"
+"spring-petclinic-api-gateway/src/main/resources/static/scripts/vet-list/vet-list.controller.js","$http.g ... /vets')","'api/vet/vets'","api/vet/vets"

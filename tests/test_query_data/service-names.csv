@@ -1,0 +1,8 @@
+"col0","col1"
+"spring-petclinic-admin-server/src/main/resources/application.yml","admin-server"
+"spring-petclinic-api-gateway/src/main/resources/application.yml","api-gateway"
+"spring-petclinic-customers-service/src/main/resources/application.yml","customers-service"
+"spring-petclinic-discovery-server/src/main/resources/application.yml","discovery-server"
+"spring-petclinic-genai-service/src/main/resources/application.yml","genai-service"
+"spring-petclinic-vets-service/src/main/resources/application.yml","vets-service"
+"spring-petclinic-visits-service/src/main/resources/application.yml","visits-service"
