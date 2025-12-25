@@ -9,6 +9,10 @@ SERVICE_MASK = r"(?:.*/)?([^/]+)/src/main/java/"
 
 
 class CorruptedCodeQLDataException(Exception):
+    """
+        An exception for case when table with CodeQL query results behaves unexpected,
+        eg. has a different numbers of columns than expected.
+    """
     def __init__(self, file_path: str, message: str):
         super().__init__(
             f"CodeQL data in file {file_path} behaves unexpectedly: {message}"
@@ -16,25 +20,23 @@ class CorruptedCodeQLDataException(Exception):
 
 
 def extract_name_with_mask(path: str, mask: str) -> re.Match[str] | None:
-    # regex = re.compile(mask)
-    # match = regex.search(path)
+    """
+        A function for extracting part of the string via SQL-like regular expressions.
+        Is used in other functions for finding patterns in strings, eg. when searching for
+        module of file by its relative path (in that case, mask should look like this 
+        `"(?:.*/)?([^/]+)/src/main/java/"`. For more info about mask syntax, check module `re`). 
+    """
     match = re.match(mask, path)
     if match:
         return match
     return None
 
 
-"""
-So basically we have two names that we should map to eachother:
-    1. The name of the directory in which microservice is placed.
-    2. The name of microservice in Eureka system. All of REST calls will be made using that names.
-Additionally third name can tale place:
-    3. Routes to service in javascript frontend.
-Ergo, first thing we need to do is map all of the names
-"""
-
-
 def map_directories_to_names(path: str) -> tuple[dict[str, str], dict[str, str]]:
+    """
+        A function for mapping the home directories of services to their names fetched from configuration JSONs.
+        Output consists of dict `({service name : service dir}, {service dir : service name})`.
+    """
     name_to_dir = {}
     dir_to_name = {}
     try:
@@ -69,19 +71,11 @@ def map_directories_to_names(path: str) -> tuple[dict[str, str], dict[str, str]]
     return (name_to_dir, dir_to_name)
 
 
-# map_directories_to_names("diag-data/petclinic/routes-of-services-in-frontend.csv")
-# map_directories_to_names("diag-data/petclinic/routes1-of-services-in-frontend.csv")
-# print(map_directories_to_names("diag-data/petclinic/service-names.csv"))
-
-"""
-Spring maps all services names in format of lb://<service name> to routes used in frontend.
-Current version of locate-routes-of-servies-in-frontend query allows to find occurences of these routes
-in javascript code and map them with names. What is left is pick the exact file from which
-call is been made via mask
-"""
-
-
 def map_frontend_rest_requests(path: str) -> dict[str, tuple[str, str]]:
+    """
+        A function for mapping inner names of services to REST-requests made from javascript frontend.
+        Output consists of dict `{callee service name : (caller dir, caller file)}`.
+    """
     names_to_caller_dir_and_file = {}
     try:
         with open(path, "r") as file:
@@ -116,18 +110,13 @@ def map_frontend_rest_requests(path: str) -> dict[str, tuple[str, str]]:
     return names_to_caller_dir_and_file
 
 
-# print(map_frontend_rest_requests("diag-data/petclinic/routes-of-services-in-frontend.csv"))
-
-"""
-Now, having maps of names to directories, we can analyze different kinds of services
-based on their specific functions. For example, link the name "discovery-server" to real
-discovery server that was found via query based on @DiscoveryServerApplication annotation
-"""
-
-
 def map_services_to_names(
     path: str, dir_to_name: dict[str, str], column: int = 1
 ) -> dict[str, str]:
+    """
+        A function for extracting service home dir from path and mapping it to one of the previously extracted names.
+        Output consists of dict `{service name : service dir}`.
+    """
     services_with_names = {}
     try:
         with open(path, "r") as file:
@@ -162,14 +151,13 @@ def map_services_to_names(
     return services_with_names
 
 
-# name_to_dir, dir_to_name = map_directories_to_names("diag-data/petclinic/service-names.csv")
-# print(map_services_to_names("diag-data/petclinic/discovery-clients.csv", dir_to_name))
-# print(map_services_to_names("diag-data/petclinic/discovery-server.csv", dir_to_name))
-
-
 def map_backend_rest_requests(
     path: str, dir_to_name: dict[str, str]
 ) -> set[tuple[str, str, str]]:
+    """
+        A function for mapping backend REST-requests (made from Java code) to the names of caller and callee.
+        Output consists of dict `{(caller name, caller file, callee name)}`.
+    """
     caller_to_callee = set()
     try:
         with open(path, "r") as file:
@@ -215,6 +203,10 @@ def map_backend_rest_requests(
 
 
 def extract_config_server(path: str) -> set[str]:
+    """
+        A function for extracting home directory of configuration server (or servers).
+        Output consists of `{config server dir}`.
+    """
     config_servers = set()
     try:
         with open(path, "r") as file:
@@ -235,7 +227,11 @@ def extract_config_server(path: str) -> set[str]:
     return config_servers
 
 
-def map_config_server_to_link(path: str, servers: set[str]):
+def map_config_server_to_link(path: str, servers: set[str]) -> dict[str, str]:
+    """
+        A function for mapping configuration server home dir to its main server on github, in case there is one.
+        Output consists of dict `{config server dir : config server link on github}`.
+    """
     name_to_link = {}
     try:
         with open(path, "r") as file:

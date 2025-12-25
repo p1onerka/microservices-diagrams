@@ -21,20 +21,35 @@ HTTP_REQUESTS_WIDTH = 5
 
 
 def create_node(name: str, description: str, type: str) -> str:
+    """
+        A function for creating a definition of node in Mermaid syntax.
+    """
     return f"{name}[{description}]:::{type}"
 
 
 def create_edge(from_node: str, to_node: str, description: str) -> str:
+    """
+        A function for creating a definition of edge in Mermaid syntax.
+    """
     return f"{from_node} -->|{description}| {to_node}"
 
 
 def create_type(type_name: str, fill: int, stroke: int, stroke_width: int = 2) -> str:
+    """
+        A function for creating a definition of type in Mermaid syntax.
+    """
     return f"classDef {type_name} fill:#{fill:x},stroke:#{stroke:x},stroke-width:{stroke_width}px;"
 
 
 def create_link_style(edge_num: int, stroke: int, width: int = 2) -> str:
+    """
+        A function for creating a definition of edge style in Mermaid syntax.
+    """
     return f"linkStyle {edge_num} stroke:#{stroke:x},stroke-width:{width}px;"
 
 
 def create_link(node_name: str, link: str) -> str:
+    """
+        A function for creating a definition of link in Mermaid syntax.
+    """
     return f'{node_name}["<a href={link}>{node_name}</a>"];'
