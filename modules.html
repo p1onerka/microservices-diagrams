@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Analyzer &mdash; microservices-diagrams 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="microservices-diagrams documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            microservices-diagrams
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Analyzer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.CorruptedCodeQLDataException"><code class="docutils literal notranslate"><span class="pre">CorruptedCodeQLDataException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.extract_config_server"><code class="docutils literal notranslate"><span class="pre">extract_config_server()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.extract_name_with_mask"><code class="docutils literal notranslate"><span class="pre">extract_name_with_mask()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.map_backend_rest_requests"><code class="docutils literal notranslate"><span class="pre">map_backend_rest_requests()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.map_config_server_to_link"><code class="docutils literal notranslate"><span class="pre">map_config_server_to_link()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.map_directories_to_names"><code class="docutils literal notranslate"><span class="pre">map_directories_to_names()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.map_frontend_rest_requests"><code class="docutils literal notranslate"><span class="pre">map_frontend_rest_requests()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data_analyzer.map_services_to_names"><code class="docutils literal notranslate"><span class="pre">map_services_to_names()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#mermaid-constructor">Mermaid Constructor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mermaid_constructor.create_edge"><code class="docutils literal notranslate"><span class="pre">create_edge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mermaid_constructor.create_link"><code class="docutils literal notranslate"><span class="pre">create_link()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mermaid_constructor.create_link_style"><code class="docutils literal notranslate"><span class="pre">create_link_style()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mermaid_constructor.create_node"><code class="docutils literal notranslate"><span class="pre">create_node()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mermaid_constructor.create_type"><code class="docutils literal notranslate"><span class="pre">create_type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#diagram-drawer">Diagram Drawer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#diag_drawer.build_diag_mermaid"><code class="docutils literal notranslate"><span class="pre">build_diag_mermaid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#diag_drawer.generate_html_visualisation"><code class="docutils literal notranslate"><span class="pre">generate_html_visualisation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#main-script">Main Script</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">microservices-diagrams</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Analyzer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-analyzer">
+<h1>Data Analyzer<a class="headerlink" href="#data-analyzer" title="Link to this heading"></a></h1>
+<p>A module of functions that find a correspondence between data from different tables.
+Is used for processing the output of CodeQL queries, mainly by mapping entities to their properties.
+For example, the name of the service to its directory and then name to REST-request to it.</p>
+<dl class="py exception" id="module-data_analyzer">
+<dt class="sig sig-object py" id="data_analyzer.CorruptedCodeQLDataException">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">CorruptedCodeQLDataException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_analyzer.html#CorruptedCodeQLDataException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.CorruptedCodeQLDataException" title="Link to this definition"></a></dt>
+<dd><p>An exception for case when table with CodeQL query results behaves unexpected,
+eg. has a different numbers of columns than expected.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.extract_config_server">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">extract_config_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#extract_config_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.extract_config_server" title="Link to this definition"></a></dt>
+<dd><p>A function for extracting home directory of configuration server (or servers).
+Output consists of <cite>{config server dir}</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.extract_name_with_mask">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">extract_name_with_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Match</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/data_analyzer.html#extract_name_with_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.extract_name_with_mask" title="Link to this definition"></a></dt>
+<dd><p>A function for extracting part of the string via SQL-like regular expressions.
+Is used in other functions for finding patterns in strings, eg. when searching for
+module of file by its relative path (in that case, mask should look like this
+<cite>“(?:.*/)?([^/]+)/src/main/java/”</cite>. For more info about mask syntax, check module <cite>re</cite>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.map_backend_rest_requests">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">map_backend_rest_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_to_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#map_backend_rest_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.map_backend_rest_requests" title="Link to this definition"></a></dt>
+<dd><p>A function for mapping backend REST-requests (made from Java code) to the names of caller and callee.
+Output consists of dict <cite>{(caller name, caller file, callee name)}</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.map_config_server_to_link">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">map_config_server_to_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">servers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#map_config_server_to_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.map_config_server_to_link" title="Link to this definition"></a></dt>
+<dd><p>A function for mapping configuration server home dir to its main server on github, in case there is one.
+Output consists of dict <cite>{config server dir : config server link on github}</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.map_directories_to_names">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">map_directories_to_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#map_directories_to_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.map_directories_to_names" title="Link to this definition"></a></dt>
+<dd><p>A function for mapping the home directories of services to their names fetched from configuration JSONs.
+Output consists of dict <cite>({service name : service dir}, {service dir : service name})</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.map_frontend_rest_requests">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">map_frontend_rest_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#map_frontend_rest_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.map_frontend_rest_requests" title="Link to this definition"></a></dt>
+<dd><p>A function for mapping inner names of services to REST-requests made from javascript frontend.
+Output consists of dict <cite>{callee service name : (caller dir, caller file)}</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_analyzer.map_services_to_names">
+<span class="sig-prename descclassname"><span class="pre">data_analyzer.</span></span><span class="sig-name descname"><span class="pre">map_services_to_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_to_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/data_analyzer.html#map_services_to_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#data_analyzer.map_services_to_names" title="Link to this definition"></a></dt>
+<dd><p>A function for extracting service home dir from path and mapping it to one of the previously extracted names.
+Output consists of dict <cite>{service name : service dir}</cite>.</p>
+</dd></dl>
+
+</section>
+<section id="mermaid-constructor">
+<h1>Mermaid Constructor<a class="headerlink" href="#mermaid-constructor" title="Link to this heading"></a></h1>
+<p>A module for generating entities of Mermaid diagram in Mermaid syntax from their properties.
+Is needed for giving the project uniformity and eliminating typos inside diagram generation.</p>
+<dl class="py function" id="module-mermaid_constructor">
+<dt class="sig sig-object py" id="mermaid_constructor.create_edge">
+<span class="sig-prename descclassname"><span class="pre">mermaid_constructor.</span></span><span class="sig-name descname"><span class="pre">create_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mermaid_constructor.html#create_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mermaid_constructor.create_edge" title="Link to this definition"></a></dt>
+<dd><p>A function for creating a definition of edge in Mermaid syntax.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mermaid_constructor.create_link">
+<span class="sig-prename descclassname"><span class="pre">mermaid_constructor.</span></span><span class="sig-name descname"><span class="pre">create_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mermaid_constructor.html#create_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mermaid_constructor.create_link" title="Link to this definition"></a></dt>
+<dd><p>A function for creating a definition of link in Mermaid syntax.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mermaid_constructor.create_link_style">
+<span class="sig-prename descclassname"><span class="pre">mermaid_constructor.</span></span><span class="sig-name descname"><span class="pre">create_link_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mermaid_constructor.html#create_link_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mermaid_constructor.create_link_style" title="Link to this definition"></a></dt>
+<dd><p>A function for creating a definition of edge style in Mermaid syntax.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mermaid_constructor.create_node">
+<span class="sig-prename descclassname"><span class="pre">mermaid_constructor.</span></span><span class="sig-name descname"><span class="pre">create_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mermaid_constructor.html#create_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mermaid_constructor.create_node" title="Link to this definition"></a></dt>
+<dd><p>A function for creating a definition of node in Mermaid syntax.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mermaid_constructor.create_type">
+<span class="sig-prename descclassname"><span class="pre">mermaid_constructor.</span></span><span class="sig-name descname"><span class="pre">create_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/mermaid_constructor.html#create_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mermaid_constructor.create_type" title="Link to this definition"></a></dt>
+<dd><p>A function for creating a definition of type in Mermaid syntax.</p>
+</dd></dl>
+
+</section>
+<section id="diagram-drawer">
+<h1>Diagram Drawer<a class="headerlink" href="#diagram-drawer" title="Link to this heading"></a></h1>
+<p>A module for processing data obtained from CodeQL queries,
+building Mermaid diagrams based on it and generating output HTML document that contains diagram.</p>
+<dl class="py function" id="module-diag_drawer">
+<dt class="sig sig-object py" id="diag_drawer.build_diag_mermaid">
+<span class="sig-prename descclassname"><span class="pre">diag_drawer.</span></span><span class="sig-name descname"><span class="pre">build_diag_mermaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/diag_drawer.html#build_diag_mermaid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#diag_drawer.build_diag_mermaid" title="Link to this definition"></a></dt>
+<dd><p>A function that binds two parts of the tool:
+processing the data fetched via CodeQL queries and presenting it via Mermaid diagram in HTML doc.
+It searches for all tables with queries results, calls <cite>Data Analyzer</cite> methods to map data accross the tables
+and creates diagram entities via <cite>Mermaid Constructor</cite> module functions.
+In more detail, all entities being created are the following:</p>
+<ol class="arabic simple">
+<li><p>Classes – for describing types of entities, eg. services, configuration servers…</p></li>
+<li><p>Nodes – for describing a single source project entity. Belongs to one of the previously declared classes</p></li>
+<li><p>Edges – for describing any kind of relations between entities, eg. REST-requests, configuration fetching… Some of them have unique styles for better readability</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="diag_drawer.generate_html_visualisation">
+<span class="sig-prename descclassname"><span class="pre">diag_drawer.</span></span><span class="sig-name descname"><span class="pre">generate_html_visualisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/diag_drawer.html#generate_html_visualisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#diag_drawer.generate_html_visualisation" title="Link to this definition"></a></dt>
+<dd><p>A function for generating output HTML document with diagram.
+Contains template of the document, in which diagram will be put.
+Requires <cite>&lt;project name&gt;</cite> as argument for naming the output file correspondingly.</p>
+</dd></dl>
+
+</section>
+<section id="main-script">
+<h1>Main Script<a class="headerlink" href="#main-script" title="Link to this heading"></a></h1>
+<p>A script for executing the tool.
+Should be launched with the following args:</p>
+<ol class="arabic simple">
+<li><p><cite>&lt;project name&gt;</cite> – how you would like to call the project inside the tool’s system. All generated files will be placed in corresponding directory</p></li>
+<li><p><cite>&lt;project dir&gt;</cite> – path to the project</p></li>
+<li><p><cite>&lt;java db name&gt;</cite> – the name of your project’s Java CodeQL database in codeql-dbs/ folder, or how would you like to call it</p></li>
+<li><p><cite>&lt;js db name&gt;</cite> – the name of your project’s Javascript CodeQL database in codeql-dbs/ folder, or how would you like to call it</p></li>
+</ol>
+<p>When launched, script first checks for databases and creates them in case they are unavailible.
+Then it performs all needed queries for each database, storing the results in <cite>&lt;project name&gt;</cite> folder.
+Each query writes its results in <cite>.bqrs</cite> format, which is then being decoded into <cite>.csv</cite> format.
+After data capture, script sets up python environment in case it’s not set and calls the main <cite>diag_drawer.py</cite> module.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$#</span><span class="w"> </span>-lt<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Script should be called with </span><span class="nv">$0</span><span class="s2"> &lt;project_name&gt; &lt;project_dir&gt; &lt;java_database_name&gt; &lt;javascript_database_name&gt;&quot;</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="linenos"> 4</span><span class="k">fi</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="nv">PROJECT_NAME</span><span class="o">=</span><span class="nv">$1</span>
+<span class="linenos"> 7</span><span class="nv">PROJECT_DIR</span><span class="o">=</span><span class="nv">$2</span>
+<span class="linenos"> 8</span><span class="nv">JAVA_DB_NAME</span><span class="o">=</span><span class="nv">$3</span>
+<span class="linenos"> 9</span><span class="nv">JS_DB_NAME</span><span class="o">=</span><span class="nv">$4</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nv">BQRS_DIR_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROJECT_NAME</span><span class="s2">/bqrs&quot;</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="c1"># TODO: make function for codeql queries</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Searching for databases in codeql-dbs directory. In case there are not, creating them&quot;</span>
+<span class="linenos">16</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;codeql-dbs&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">17</span><span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;codeql-dbs&quot;</span>
+<span class="linenos">18</span><span class="k">fi</span>
+<span class="linenos">19</span><span class="nv">JAVA_DB_PATH</span><span class="o">=</span><span class="s2">&quot;codeql-dbs/</span><span class="nv">$JAVA_DB_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">20</span><span class="nv">JS_DB_PATH</span><span class="o">=</span><span class="s2">&quot;codeql-dbs/</span><span class="nv">$JS_DB_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">21</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$JAVA_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">22</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Creating java database&quot;</span>
+<span class="linenos">23</span><span class="w">    </span>codeql<span class="w"> </span>database<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$JAVA_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span>--language<span class="o">=</span>java<span class="w"> </span>--source-root<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROJECT_DIR</span><span class="s2">&quot;</span>
+<span class="linenos">24</span><span class="k">fi</span>
+<span class="linenos">25</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$JS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">26</span><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Creating javascript database&quot;</span>
+<span class="linenos">27</span><span class="w">    </span>codeql<span class="w"> </span>database<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$JS_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span>--language<span class="o">=</span>javascript<span class="w"> </span>--source-root<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROJECT_DIR</span><span class="s2">&quot;</span>
+<span class="linenos">28</span><span class="k">fi</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Collecting data about services&quot;</span>
+<span class="linenos">31</span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PROJECT_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">32</span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BQRS_DIR_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="c1"># ------------------------ JAVA BLOCK ------------------------ </span>
+<span class="linenos">35</span>
+<span class="linenos">36</span><span class="c1"># searching for eureka disovery clients</span>
+<span class="linenos">37</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query/eureka-discovery-clients.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JAVA_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/discovery-clients.bqrs
+<span class="linenos">38</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/discovery-clients.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/discovery-clients.csv
+<span class="linenos">39</span>
+<span class="linenos">40</span><span class="c1"># searching for eureka discovery server</span>
+<span class="linenos">41</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query/eureka-discovery-server.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JAVA_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/discovery-server.bqrs
+<span class="linenos">42</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/discovery-server.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/discovery-server.csv
+<span class="linenos">43</span>
+<span class="linenos">44</span><span class="c1"># searching for load-balanced requesters</span>
+<span class="linenos">45</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query/eureka-load-balanced.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JAVA_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/eureka-load-balanced.bqrs
+<span class="linenos">46</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/eureka-load-balanced.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/eureka-load-balanced.csv
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="c1"># searching for REST requesters</span>
+<span class="linenos">49</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query/rest-requesters.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JAVA_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/rest-requesters.bqrs
+<span class="linenos">50</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/rest-requesters.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/rest-requesters.csv
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="c1"># ---------------------- CONFIG BLOCK ---------------------- </span>
+<span class="linenos">53</span>
+<span class="linenos">54</span><span class="c1"># searching for app names in Eureka (for mapping them with REST requests later)</span>
+<span class="linenos">55</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query-js/locate-service-names.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JS_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/service-names.bqrs
+<span class="linenos">56</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/service-names.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/service-names.csv
+<span class="linenos">57</span>
+<span class="linenos">58</span><span class="c1"># searching for config server</span>
+<span class="linenos">59</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query-js/locate-config-server.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JS_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/config-server.bqrs
+<span class="linenos">60</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/config-server.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/config-server.csv
+<span class="linenos">61</span>
+<span class="linenos">62</span><span class="c1"># searching for link to github config server if there is one</span>
+<span class="linenos">63</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query-js/locate-config-server-link.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JS_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/config-server-link.bqrs
+<span class="linenos">64</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/config-server-link.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/config-server-link.csv
+<span class="linenos">65</span>
+<span class="linenos">66</span><span class="c1"># --------------------- JAVASCRIPT BLOCK --------------------- </span>
+<span class="linenos">67</span>
+<span class="linenos">68</span><span class="c1"># searching for GET requests in javascript code</span>
+<span class="linenos">69</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query-js/rest-requests-javascript-fontend.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JS_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/js-gets.bqrs
+<span class="linenos">70</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/js-gets.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/js-gets.csv<span class="w"> </span>
+<span class="linenos">71</span>
+<span class="linenos">72</span><span class="c1"># searching for routes of services in frontend</span>
+<span class="linenos">73</span>codeql<span class="w"> </span>query<span class="w"> </span>run<span class="w"> </span>codeql-query-js/locate-routes-of-services-in-frontend.ql<span class="w">   </span>--database<span class="w"> </span><span class="nv">$JS_DB_PATH</span><span class="w">   </span>--output<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/routes-of-services-in-frontend.bqrs
+<span class="linenos">74</span>codeql<span class="w"> </span>bqrs<span class="w"> </span>decode<span class="w"> </span><span class="nv">$BQRS_DIR_NAME</span>/routes-of-services-in-frontend.bqrs<span class="w">   </span>--format<span class="o">=</span>csv<span class="w">   </span>--output<span class="w"> </span><span class="nv">$PROJECT_NAME</span>/routes-of-services-in-frontend.csv<span class="w"> </span>
+<span class="linenos">75</span>
+<span class="linenos">76</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Building diagram&quot;</span>
+<span class="linenos">77</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;.venv&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="linenos">78</span><span class="w">    </span><span class="o">(</span>
+<span class="linenos">79</span><span class="w">        </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<span class="linenos">80</span><span class="w">        </span>python3<span class="w"> </span>diag_drawer.py<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PROJECT_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">81</span><span class="w">    </span><span class="o">)</span>
+<span class="linenos">82</span><span class="k">else</span>
+<span class="linenos">83</span><span class="w">    </span><span class="o">(</span>
+<span class="linenos">84</span><span class="w">        </span><span class="nb">cd</span><span class="w"> </span>diag_data
+<span class="linenos">85</span><span class="w">        </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<span class="linenos">86</span><span class="w">        </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+<span class="linenos">87</span><span class="w">        </span><span class="c1">#pip3 install pandas networkx matplotlib</span>
+<span class="linenos">88</span><span class="w">        </span><span class="nb">cd</span><span class="w"> </span>..
+<span class="linenos">89</span><span class="w">        </span>python3<span class="w"> </span>diag_drawer.py<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PROJECT_NAME</span><span class="s2">&quot;</span>
+<span class="linenos">90</span><span class="w">    </span><span class="o">)</span>
+<span class="linenos">91</span><span class="k">fi</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="microservices-diagrams documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ksenia Kotelnikova (p1onerka).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

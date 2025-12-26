@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>diag_drawer &mdash; microservices-diagrams 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            microservices-diagrams
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Data Analyzer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#mermaid-constructor">Mermaid Constructor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#diagram-drawer">Diagram Drawer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#main-script">Main Script</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">microservices-diagrams</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">diag_drawer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for diag_drawer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">mermaid_constructor</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">create_node</span><span class="p">,</span>
+    <span class="n">create_edge</span><span class="p">,</span>
+    <span class="n">create_type</span><span class="p">,</span>
+    <span class="n">create_link_style</span><span class="p">,</span>
+    <span class="n">create_link</span><span class="p">,</span>
+    <span class="n">CONFIG_SERVER_TYPE</span><span class="p">,</span>
+    <span class="n">CONFIG_SERVER_FILL</span><span class="p">,</span>
+    <span class="n">CONFIG_SERVER_STROKE</span><span class="p">,</span>
+    <span class="n">DISCOVERY_SERVER_TYPE</span><span class="p">,</span>
+    <span class="n">DISCOVERY_SERVER_FILL</span><span class="p">,</span>
+    <span class="n">DISCOVERY_SERVER_STROKE</span><span class="p">,</span>
+    <span class="n">EUREKA_CLIENT_TYPE</span><span class="p">,</span>
+    <span class="n">EUREKA_CLIENT_FILL</span><span class="p">,</span>
+    <span class="n">EUREKA_CLIENT_STROKE</span><span class="p">,</span>
+    <span class="n">REGISTER_IN_DISC_SERVER_MESSAGE</span><span class="p">,</span>
+    <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE</span><span class="p">,</span>
+    <span class="n">CONFIG_SERVER_DESCRIPTION</span><span class="p">,</span>
+    <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR</span><span class="p">,</span>
+    <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH</span><span class="p">,</span>
+    <span class="n">HTTP_REQUESTS_MESSAGE</span><span class="p">,</span>
+    <span class="n">HTTP_REQUESTS_COLOR</span><span class="p">,</span>
+    <span class="n">HTTP_REQUESTS_WIDTH</span><span class="p">,</span>
+    <span class="n">REGISTER_IN_DISC_SERVER_COLOR</span><span class="p">,</span>
+    <span class="n">REGISTER_IN_DISC_SERVER_WIDTH</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">data_analyzer</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">map_directories_to_names</span><span class="p">,</span>
+    <span class="n">map_frontend_rest_requests</span><span class="p">,</span>
+    <span class="n">map_services_to_names</span><span class="p">,</span>
+    <span class="n">map_backend_rest_requests</span><span class="p">,</span>
+    <span class="n">extract_config_server</span><span class="p">,</span>
+    <span class="n">map_config_server_to_link</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="generate_html_visualisation">
+<a class="viewcode-back" href="../modules.html#diag_drawer.generate_html_visualisation">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_html_visualisation</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">diag</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for generating output HTML document with diagram.</span>
+<span class="sd">    Contains template of the document, in which diagram will be put.</span>
+<span class="sd">    Requires `&lt;project name&gt;` as argument for naming the output file correspondingly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">HTML_PAGE_TEMPLATE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;!DOCTYPE html&gt;</span>
+<span class="s2">    &lt;html lang=&quot;ru&quot;&gt;</span>
+<span class="s2">    &lt;head&gt;</span>
+<span class="s2">        &lt;meta charset=&quot;utf-8&quot; /&gt;</span>
+<span class="s2">        &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;</span>
+<span class="s2">        &lt;title&gt;Microservice interactions diagram&lt;/title&gt;</span>
+<span class="s2">        &lt;script type=&quot;module&quot;&gt;</span>
+<span class="s2">            import mermaid from &#39;https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs&#39;;</span>
+<span class="s2">            mermaid.initialize(</span><span class="se">{{</span><span class="s2">startOnLoad: true</span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">        &lt;/script&gt;</span>
+<span class="s2">        &lt;style&gt;</span>
+<span class="s2">            body </span><span class="se">{{</span>
+<span class="s2">                font-family: sans-serif;</span>
+<span class="s2">                display: flex;</span>
+<span class="s2">                justify-content: center;</span>
+<span class="s2">                align-items: center;</span>
+<span class="s2">                min-height: 100vh;</span>
+<span class="s2">                margin: 0;</span>
+<span class="s2">                background-color: #f4f4f4;</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">            .mermaid </span><span class="se">{{</span>
+<span class="s2">                padding: 20px;</span>
+<span class="s2">                background-color: #ffffff;</span>
+<span class="s2">                border-radius: 8px;</span>
+<span class="s2">                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);</span>
+<span class="s2">            </span><span class="se">}}</span>
+<span class="s2">        &lt;/style&gt;</span>
+<span class="s2">    &lt;/head&gt;</span>
+<span class="s2">    &lt;body&gt;</span>
+<span class="s2">        &lt;pre class=&quot;mermaid&quot;&gt;</span><span class="si">{</span><span class="n">diag</span><span class="si">}</span><span class="s2">&lt;/pre&gt;</span>
+<span class="s2">    &lt;/body&gt;</span>
+<span class="s2">    &lt;/html&gt;&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">-output-diag-page.html&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">HTML_PAGE_TEMPLATE</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error with opening HTML file </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build_diag_mermaid">
+<a class="viewcode-back" href="../modules.html#diag_drawer.build_diag_mermaid">[docs]</a>
+<span class="k">def</span> <span class="nf">build_diag_mermaid</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function that binds two parts of the tool:</span>
+<span class="sd">    processing the data fetched via CodeQL queries and presenting it via Mermaid diagram in HTML doc.</span>
+<span class="sd">    It searches for all tables with queries results, calls `Data Analyzer` methods to map data accross the tables</span>
+<span class="sd">    and creates diagram entities via `Mermaid Constructor` module functions.</span>
+<span class="sd">    In more detail, all entities being created are the following:</span>
+
+<span class="sd">    1. Classes -- for describing types of entities, eg. services, configuration servers...</span>
+<span class="sd">    2. Nodes -- for describing a single source project entity. Belongs to one of the previously declared classes</span>
+<span class="sd">    3. Edges -- for describing any kind of relations between entities, eg. REST-requests, configuration fetching... Some of them have unique styles for better readability</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diag_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">edges_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;graph LR&quot;</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">dir_to_name</span> <span class="o">=</span> <span class="n">map_directories_to_names</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/service-names.csv&quot;</span><span class="p">)</span>
+    <span class="n">names_called_by_frontend</span> <span class="o">=</span> <span class="n">map_frontend_rest_requests</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/routes-of-services-in-frontend.csv&quot;</span>
+    <span class="p">)</span>
+    <span class="n">names_of_eureka_clients</span> <span class="o">=</span> <span class="n">map_services_to_names</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/discovery-clients.csv&quot;</span><span class="p">,</span> <span class="n">dir_to_name</span>
+    <span class="p">)</span>
+    <span class="n">names_of_eureka_servers</span> <span class="o">=</span> <span class="n">map_services_to_names</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/discovery-server.csv&quot;</span><span class="p">,</span> <span class="n">dir_to_name</span>
+    <span class="p">)</span>
+    <span class="n">names_of_balanced_requesters</span> <span class="o">=</span> <span class="n">map_services_to_names</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/eureka-load-balanced.csv&quot;</span><span class="p">,</span> <span class="n">dir_to_name</span>
+    <span class="p">)</span>
+    <span class="n">names_of_inner_rest_callers</span> <span class="o">=</span> <span class="n">map_backend_rest_requests</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/rest-requesters.csv&quot;</span><span class="p">,</span> <span class="n">dir_to_name</span>
+    <span class="p">)</span>
+    <span class="n">names_of_config_servers</span> <span class="o">=</span> <span class="n">extract_config_server</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/config-server.csv&quot;</span><span class="p">)</span>
+    <span class="n">config_servers_to_link</span> <span class="o">=</span> <span class="n">map_config_server_to_link</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_name</span><span class="si">}</span><span class="s2">/config-server-link.csv&quot;</span><span class="p">,</span> <span class="n">names_of_config_servers</span>
+    <span class="p">)</span>
+
+    <span class="c1"># classes</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names_of_eureka_servers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_type</span><span class="p">(</span>
+                <span class="n">DISCOVERY_SERVER_TYPE</span><span class="p">,</span> <span class="n">DISCOVERY_SERVER_FILL</span><span class="p">,</span> <span class="n">DISCOVERY_SERVER_STROKE</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names_of_eureka_clients</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_type</span><span class="p">(</span><span class="n">EUREKA_CLIENT_TYPE</span><span class="p">,</span> <span class="n">EUREKA_CLIENT_FILL</span><span class="p">,</span> <span class="n">EUREKA_CLIENT_STROKE</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names_of_config_servers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_type</span><span class="p">(</span><span class="n">CONFIG_SERVER_TYPE</span><span class="p">,</span> <span class="n">CONFIG_SERVER_FILL</span><span class="p">,</span> <span class="n">CONFIG_SERVER_STROKE</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># nodes</span>
+    <span class="k">for</span> <span class="n">discovery_server</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_eureka_servers</span><span class="p">):</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_node</span><span class="p">(</span><span class="n">discovery_server</span><span class="p">,</span> <span class="n">discovery_server</span><span class="p">,</span> <span class="n">DISCOVERY_SERVER_TYPE</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_eureka_clients</span><span class="p">):</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_node</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">service</span><span class="p">,</span> <span class="n">EUREKA_CLIENT_TYPE</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">config_server</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_config_servers</span><span class="p">):</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;subgraph LEGEND[&quot;</span><span class="si">{</span><span class="n">CONFIG_SERVER_DESCRIPTION</span><span class="si">}</span><span class="s1">&quot;]</span><span class="se">\n</span><span class="s1">direction LR</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_node</span><span class="p">(</span><span class="n">config_server</span><span class="p">,</span> <span class="n">config_server</span><span class="p">,</span> <span class="n">CONFIG_SERVER_TYPE</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">config_servers_to_link</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config_server</span><span class="p">):</span>
+            <span class="n">link</span> <span class="o">=</span> <span class="n">config_servers_to_link</span><span class="p">[</span><span class="n">config_server</span><span class="p">]</span>
+            <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">create_link</span><span class="p">(</span><span class="n">config_server</span><span class="p">,</span> <span class="n">link</span><span class="p">))</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="c1"># edges</span>
+    <span class="k">for</span> <span class="n">server</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_eureka_servers</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="n">names_of_eureka_clients</span><span class="p">:</span>
+            <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">create_edge</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">REGISTER_IN_DISC_SERVER_MESSAGE</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">create_link_style</span><span class="p">(</span>
+                    <span class="n">edges_count</span><span class="p">,</span>
+                    <span class="n">REGISTER_IN_DISC_SERVER_COLOR</span><span class="p">,</span>
+                    <span class="n">REGISTER_IN_DISC_SERVER_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">edges_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_called_by_frontend</span><span class="p">):</span>
+        <span class="n">caller_name</span> <span class="o">=</span> <span class="n">dir_to_name</span><span class="p">[</span><span class="n">names_called_by_frontend</span><span class="p">[</span><span class="n">service</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_edge</span><span class="p">(</span>
+                <span class="n">caller_name</span><span class="p">,</span>
+                <span class="n">service</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HTTP_REQUESTS_MESSAGE</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">names_called_by_frontend</span><span class="p">[</span><span class="n">service</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_link_style</span><span class="p">(</span><span class="n">edges_count</span><span class="p">,</span> <span class="n">HTTP_REQUESTS_COLOR</span><span class="p">,</span> <span class="n">HTTP_REQUESTS_WIDTH</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">edges_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">requester</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_balanced_requesters</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">server</span> <span class="ow">in</span> <span class="n">names_of_eureka_servers</span><span class="p">:</span>
+            <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">create_edge</span><span class="p">(</span><span class="n">requester</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">create_link_style</span><span class="p">(</span>
+                    <span class="n">edges_count</span><span class="p">,</span>
+                    <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR</span><span class="p">,</span>
+                    <span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">edges_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">requester</span><span class="p">,</span> <span class="n">requester_file</span><span class="p">,</span> <span class="n">requested</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names_of_inner_rest_callers</span><span class="p">):</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_edge</span><span class="p">(</span>
+                <span class="n">requester</span><span class="p">,</span> <span class="n">requested</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HTTP_REQUESTS_MESSAGE</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">requester_file</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">diag_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">create_link_style</span><span class="p">(</span><span class="n">edges_count</span><span class="p">,</span> <span class="n">HTTP_REQUESTS_COLOR</span><span class="p">,</span> <span class="n">HTTP_REQUESTS_WIDTH</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">edges_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">diag_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diag_lines</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">diag_string</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">project_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">diag</span> <span class="o">=</span> <span class="n">build_diag_mermaid</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+        <span class="n">generate_html_visualisation</span><span class="p">(</span><span class="n">project_name</span><span class="p">,</span> <span class="n">diag</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;too many arguments: the function expects only project name&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ksenia Kotelnikova (p1onerka).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

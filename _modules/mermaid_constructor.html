@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mermaid_constructor &mdash; microservices-diagrams 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            microservices-diagrams
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Data Analyzer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#mermaid-constructor">Mermaid Constructor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#diagram-drawer">Diagram Drawer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#main-script">Main Script</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">microservices-diagrams</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mermaid_constructor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mermaid_constructor</h1><div class="highlight"><pre>
+<span></span><span class="n">CONFIG_SERVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;config_server&quot;</span>
+<span class="n">CONFIG_SERVER_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;configs for all services&quot;</span>
+<span class="n">CONFIG_SERVER_FILL</span> <span class="o">=</span> <span class="mh">0xD8A059</span>
+<span class="n">CONFIG_SERVER_STROKE</span> <span class="o">=</span> <span class="mh">0x956E3D</span>
+<span class="n">DISCOVERY_SERVER_TYPE</span> <span class="o">=</span> <span class="s2">&quot;discovery_server&quot;</span>
+<span class="n">DISCOVERY_SERVER_FILL</span> <span class="o">=</span> <span class="mh">0x79EAEC</span>
+<span class="n">DISCOVERY_SERVER_STROKE</span> <span class="o">=</span> <span class="mh">0x55B8B9</span>
+<span class="n">EUREKA_CLIENT_TYPE</span> <span class="o">=</span> <span class="s2">&quot;eureka_client&quot;</span>
+<span class="n">EUREKA_CLIENT_FILL</span> <span class="o">=</span> <span class="mh">0x8AE692</span>
+<span class="n">EUREKA_CLIENT_STROKE</span> <span class="o">=</span> <span class="mh">0x55B95E</span>
+
+<span class="n">REGISTER_IN_DISC_SERVER_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;register&quot;</span>
+<span class="n">REGISTER_IN_DISC_SERVER_COLOR</span> <span class="o">=</span> <span class="mh">0x117A1A</span>
+<span class="n">REGISTER_IN_DISC_SERVER_WIDTH</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;get apps instances&quot;</span>
+<span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_COLOR</span> <span class="o">=</span> <span class="mh">0x0074D9</span>
+<span class="n">FETCH_DATA_ABOUT_APPS_INSTANCES_WIDTH</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">HTTP_REQUESTS_MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;http requests from &quot;</span>
+<span class="n">HTTP_REQUESTS_COLOR</span> <span class="o">=</span> <span class="mh">0x4A4599</span>
+<span class="n">HTTP_REQUESTS_WIDTH</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="create_node">
+<a class="viewcode-back" href="../modules.html#mermaid_constructor.create_node">[docs]</a>
+<span class="k">def</span> <span class="nf">create_node</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for creating a definition of node in Mermaid syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">]:::</span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="create_edge">
+<a class="viewcode-back" href="../modules.html#mermaid_constructor.create_edge">[docs]</a>
+<span class="k">def</span> <span class="nf">create_edge</span><span class="p">(</span><span class="n">from_node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for creating a definition of edge in Mermaid syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_node</span><span class="si">}</span><span class="s2"> --&gt;|</span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">| </span><span class="si">{</span><span class="n">to_node</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="create_type">
+<a class="viewcode-back" href="../modules.html#mermaid_constructor.create_type">[docs]</a>
+<span class="k">def</span> <span class="nf">create_type</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fill</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">stroke</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">stroke_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for creating a definition of type in Mermaid syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;classDef </span><span class="si">{</span><span class="n">type_name</span><span class="si">}</span><span class="s2"> fill:#</span><span class="si">{</span><span class="n">fill</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">,stroke:#</span><span class="si">{</span><span class="n">stroke</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">,stroke-width:</span><span class="si">{</span><span class="n">stroke_width</span><span class="si">}</span><span class="s2">px;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="create_link_style">
+<a class="viewcode-back" href="../modules.html#mermaid_constructor.create_link_style">[docs]</a>
+<span class="k">def</span> <span class="nf">create_link_style</span><span class="p">(</span><span class="n">edge_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">stroke</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for creating a definition of edge style in Mermaid syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;linkStyle </span><span class="si">{</span><span class="n">edge_num</span><span class="si">}</span><span class="s2"> stroke:#</span><span class="si">{</span><span class="n">stroke</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">,stroke-width:</span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2">px;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="create_link">
+<a class="viewcode-back" href="../modules.html#mermaid_constructor.create_link">[docs]</a>
+<span class="k">def</span> <span class="nf">create_link</span><span class="p">(</span><span class="n">node_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">link</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function for creating a definition of link in Mermaid syntax.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node_name</span><span class="si">}</span><span class="s1">[&quot;&lt;a href=</span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s1">&gt;</span><span class="si">{</span><span class="n">node_name</span><span class="si">}</span><span class="s1">&lt;/a&gt;&quot;];&#39;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ksenia Kotelnikova (p1onerka).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
