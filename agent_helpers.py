@@ -7,15 +7,18 @@ DBS_PATH = "codeql-dbs"
 
 
 def make_project_related_tools(project_path: str):
+    """
+    Makes tools that can be used to gain information about the project
+
+    Args:
+        project_path: Global path to the home dir of the project.
+    """
     def read_source_file(file_path: str) -> str:
         """
         Read a source file in the project.
 
         Args:
             file_path: Local path to the source file.
-            project_path: Global path to the home dir of the project.
-                If provided, file_path is resolved relative to the project root and must remain inside the project.
-                If left empty, file_path is resolved relative to the current working directory.
 
         Returns:
             First 12000 characters of file.
@@ -42,13 +45,10 @@ def make_project_related_tools(project_path: str):
 
     def list_directory(dir_path: str) -> str:
         """
-        Look into directory contents.
+        Look into project's directory contents.
 
         Args:
             dir_path: Local path of directory to inspect.
-            project_path: Global path to the home dir of the project.
-                If provided, dir_path is resolved relative to the project root and must remain inside the project.
-                If left empty, dir_path is resolved relative to the current working directory.
 
         Returns:
             The list of files and directories inside the given directory.
@@ -77,7 +77,19 @@ def make_project_related_tools(project_path: str):
         except Exception as e:
             return f"Error reading directory: {str(e)}"
 
-    return read_source_file, list_directory
+    def list_project_structure() -> str:
+        """
+        Fetches the file structure of the project
+
+        Args:
+            project_path: Global path to the home dir of the project.
+        Returns:
+            File structure in text format
+        """
+        res = subprocess.run(["tree", f"{project_path}"], capture_output=True, text=True)
+        return res.stdout
+
+    return read_source_file, list_directory, list_project_structure
 
 
 def list_codeql_queries() -> dict[str, list[str]]:
@@ -128,28 +140,29 @@ def read_codeql_query_by_name(name: str) -> str:
 
 
 # WIP: doesnt support infrastructure setup (qlpack.yml). prb make some function before agent later on
+# TODO: do smth with return value?
 def save_codeql_query(query: str, query_name: str, query_language: str) -> str:
     """
     Save the given codeQL query
 
     Args:
         query: query text in str format
-        query_name: requested name of the file with query
+        query_name: requested name of the file with query (with .ql extension)
         query_language: currently supports java/javascript. Depending on language, the query will be saved in one of the directories with according setup
 
     Returns:
-        path to the query file with name <query_name>.ql
+        name of the query or error message
     """
 
     if query_language == "java":
-        query_name = f"{JAVA_QUERIES_PATH}/{query_name}.ql"
+        query_path = f"{JAVA_QUERIES_PATH}/{query_name}"
     elif query_language == "javascript":
-        query_name = f"{JS_QUERIES_PATH}/{query_name}.ql"
+        query_path = f"{JS_QUERIES_PATH}/{query_name}"
     else:
         return f"Error: the tool currently does not support queries in {query_language}"
 
     try:
-        with open(query_name, "w", encoding="utf-8") as file:
+        with open(query_path, "w", encoding="utf-8") as file:
             file.write(query)
         return query_name
     except Exception as e:
@@ -211,6 +224,88 @@ def execute_codeql_query(query_name: str, db_name: str, language: str) -> str:
             content = f.read(12000)
             if len(content) == 12000:
                 return content + "\n... (file was cut due to size)"
+            os.remove(f"{output_path}.bqrs")
+            os.remove(f"{output_path}.csv")
             return content
     except Exception as e:
         return f"Error reading results {output_path} of query {query_path} on db {db_path}: {str(e)}"
+
+
+def save_and_execute_codeql_query(query: str, query_name: str, db_name: str, language: str) -> str:
+    """
+    Saves and executes passed codeQL query
+
+    Args:
+        query: query text in str format
+        query_name: the name of file with codeQL query (with the .ql extension)
+        db_name: the name of database to perform the query on
+        language: the target language of the query (currently java | javascript)
+
+    Returns:
+        the contents of .csv table with query results
+    """
+    save_codeql_query(query, query_name, language)
+    return execute_codeql_query(query_name, db_name, language)
+
+
+def create_java_annotation_to_classes_query(ann: str) -> str:
+    """
+    Creates java codeQL query that finds all classes with given annotation and returns their name and file with main class
+
+    Args:
+        ann: Annotation without the @ symbol.
+    Returns:
+        Text of the query.
+
+    """
+    return f"""
+        import java
+
+        from Class c, Annotation ann
+        where
+            ann = c.getAnAnnotation() and
+            ann.getType().getQualifiedName().matches("%{ann}")
+        select c, c.getFile().getRelativePath()
+    """
+
+
+def create_java_method_calls_to_classes_query(method: str) -> str:
+    """
+        Creates java codeQL query that finds all classes with given method calls and returns their name and file with main class
+    
+        Args:
+            method: Method to find calls of.
+        Returns:
+            Text of the query.
+    """
+    return f"""
+        import java
+
+        from MethodCall mc
+        where mc.getMethod().getName() = "{method}"
+        select mc.getCompilationUnit(), mc.getCompilationUnit().getRelativePath()
+
+    """
+
+# TODO: add .properties?
+def create_js_dir_to_yaml_query(dir_name: str) -> str:
+    """
+        Creates java codeQL query that finds paths to microservice's configuration YAML based on its home directory.
+    
+        Args:
+            dir_name: Home directory of service to inspect.
+        Returns:
+            Text of the query.
+    """
+    return f"""
+        import javascript
+
+        from YamlDocument doc
+        where doc.getFile().getExtension() in ["yml", "yaml"] and
+            doc.getFile().toString().matches("%{dir_name}%")
+        select doc.getFile().getRelativePath()
+    """
+
+
+#q = create_js_dir_to_yaml_query("spring-petclinic-genai-service")
+#print(save_and_execute_codeql_query(q, "find-genai.ql", "spring-petclinic-microservices-js", "javascript"))
