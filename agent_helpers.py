@@ -77,19 +77,19 @@ def make_project_related_tools(project_path: str):
         except Exception as e:
             return f"Error reading directory: {str(e)}"
 
-    def list_project_structure() -> str:
+    def list_dir_structure(dir_path: str) -> str:
         """
-        Fetches the file structure of the project
+        Fetches the file structure of the directory
 
         Args:
-            project_path: Global path to the home dir of the project.
+            dir_path: Global path to the dir to inspect
         Returns:
             File structure in text format
         """
-        res = subprocess.run(["tree", f"{project_path}"], capture_output=True, text=True)
+        res = subprocess.run(["tree", f"{dir_path}"], capture_output=True, text=True)
         return res.stdout
 
-    return read_source_file, list_directory, list_project_structure
+    return read_source_file, list_directory, list_dir_structure
 
 
 def list_codeql_queries() -> dict[str, list[str]]:
