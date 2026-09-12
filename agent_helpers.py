@@ -4,6 +4,8 @@ import subprocess
 JAVA_QUERIES_PATH = "codeql-query"
 JS_QUERIES_PATH = "codeql-query-js"
 DBS_PATH = "codeql-dbs"
+JAVA = "java"
+JAVASCRIPT = "javascript"
 
 
 def make_project_related_tools(project_path: str):
@@ -248,17 +250,20 @@ def save_and_execute_codeql_query(query: str, query_name: str, db_name: str, lan
     return execute_codeql_query(query_name, db_name, language)
 
 
-def create_java_annotation_to_classes_query(ann: str) -> str:
+# TODO: refactor DB connection. maybe create factory for query execution methods with db_names as parameters
+# or move dbs inside project dir to infer their path as <project_path>/db_java
+def create_and_execute_java_annotation_to_classes_query(ann: str, db_name: str) -> str:
     """
-    Creates java codeQL query that finds all classes with given annotation and returns their name and file with main class
+    Creates and executes java codeQL query that finds all classes with given annotation
 
     Args:
         ann: Annotation without the @ symbol.
+        db_name: the name of database to perform the query on.
     Returns:
-        Text of the query.
+        The contents of .csv table with query results.
 
     """
-    return f"""
+    query = f"""
         import java
 
         from Class c, Annotation ann
@@ -267,37 +272,44 @@ def create_java_annotation_to_classes_query(ann: str) -> str:
             ann.getType().getQualifiedName().matches("%{ann}")
         select c, c.getFile().getRelativePath()
     """
+    query_name = f"search-for-{ann}-annotation.ql"
+    save_codeql_query(query, query_name, JAVA)
+    return execute_codeql_query(query_name, db_name, JAVA)
 
 
-def create_java_method_calls_to_classes_query(method: str) -> str:
+def create_and_execute_java_method_calls_to_classes_query(method: str, db_name: str) -> str:
     """
-        Creates java codeQL query that finds all classes with given method calls and returns their name and file with main class
+        Creates and executes java codeQL query that finds all classes with given method calls and returns their name and file with main class
     
         Args:
             method: Method to find calls of.
+            db_name: the name of database to perform the query on.
         Returns:
-            Text of the query.
+            The contents of .csv table with query results.
     """
-    return f"""
+    query = f"""
         import java
 
         from MethodCall mc
         where mc.getMethod().getName() = "{method}"
         select mc.getCompilationUnit(), mc.getCompilationUnit().getRelativePath()
-
     """
+    query_name = f"search-for-{method}-calls.ql"
+    save_codeql_query(query, query_name, JAVA)
+    return execute_codeql_query(query_name, db_name, JAVA)
 
 # TODO: add .properties?
-def create_js_dir_to_yaml_query(dir_name: str) -> str:
+def create_and_execute_js_dir_to_yaml_query(dir_name: str, db_name: str) -> str:
     """
-        Creates java codeQL query that finds paths to microservice's configuration YAML based on its home directory.
+        Creates and executes java codeQL query that finds paths to microservice's configuration YAML based on its home directory.
     
         Args:
             dir_name: Home directory of service to inspect.
+            db_name: the name of database to perform the query on.
         Returns:
-            Text of the query.
+            The contents of .csv table with query results.
     """
-    return f"""
+    query = f"""
         import javascript
 
         from YamlDocument doc
@@ -305,7 +317,40 @@ def create_js_dir_to_yaml_query(dir_name: str) -> str:
             doc.getFile().toString().matches("%{dir_name}%")
         select doc.getFile().getRelativePath()
     """
+    query_name = f"search-for-{dir_name}-yml-config.ql"
+    save_codeql_query(query, query_name, JAVASCRIPT)
+    return execute_codeql_query(query_name, db_name, JAVASCRIPT)
+
+
+# if create_and_execute_java_services_dependencies_query is too heavy on tokens
+def create_and_execute_java_dir_to_dependencies_query(dir_name: str, query_name: str, db_name: str) -> str:
+    pass
+
+
+# TODO: rename all of this to smth like "perform query"?
+def create_and_execute_java_services_dependencies_query(db_name: str) -> str:
+    """
+        Creates and executes java codeQL query that finds all pom.xml files in the project and maps modules' names to their dependencies
+    
+        Args:
+            db_name: the name of database to perform the query on.
+        Returns:
+            The contents of .csv table with query results.
+    """
+    query = """
+        import java
+        import semmle.code.xml.MavenPom
+
+        from Pom pom
+        select pom, pom.getArtifact().getValue(), pom.getDependencies().getADependency().getArtifact().getValue()
+    """
+    query_name = f"search-for-modules-dependencies.ql"
+    save_codeql_query(query, query_name, JAVA)
+    return execute_codeql_query(query_name, db_name, JAVA)
 
 
 #q = create_js_dir_to_yaml_query("spring-petclinic-genai-service")
 #print(save_and_execute_codeql_query(q, "find-genai.ql", "spring-petclinic-microservices-js", "javascript"))
+#print(execute_codeql_query("testie.ql", "piggymetrics-java", "java"))
+#print(create_and_execute_js_dir_to_yaml_query("statistics-service", "piggymetrics-js"))
+#print(execute_codeql_query("testie.ql", "SpringBootMicroservices-java","java"))
