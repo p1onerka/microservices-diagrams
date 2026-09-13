@@ -1,5 +1,6 @@
 from ollama import chat
 import sys
+import time
 
 from agent_helpers import (
     make_project_related_tools,
@@ -8,9 +9,10 @@ from agent_helpers import (
     save_codeql_query,
     execute_codeql_query,
     save_and_execute_codeql_query,
-    create_java_annotation_to_classes_query,
-    create_java_method_calls_to_classes_query,
-    create_js_dir_to_yaml_query,
+    create_and_execute_java_annotation_to_classes_query,
+    create_and_execute_java_method_calls_to_classes_query,
+    create_and_execute_java_services_dependencies_query,
+    create_and_execute_js_dir_to_yaml_query,
 )
 
 from prompts import (
@@ -20,7 +22,7 @@ from prompts import (
 )
 
 
-def run_agent_simple(project_path: str, tools):
+def run_agent_simple(project_path: str, tools) -> str:
     available_functions = {}
     for tool in tools:
         available_functions[tool.__name__] = tool
@@ -71,10 +73,10 @@ def run_agent_simple(project_path: str, tools):
         else:
             print("\nFINAL ANSWER")
             print(response.message.content)
-            break
+            return response.message.content
 
 
-def run_agent_codeql(project_path: str, tools):
+def run_agent_codeql(project_path: str, tools) -> str:
     available_functions = {}
     for tool in tools:
         available_functions[tool.__name__] = tool
@@ -131,10 +133,10 @@ def run_agent_codeql(project_path: str, tools):
         else:
             print("\nFINAL ANSWER")
             print(response.message.content)
-            break
+            return response.message.content
 
 
-def run_agent_codeql_with_patterns(project_path: str, tools):
+def run_agent_codeql_with_patterns(project_path: str, tools) -> str:
     available_functions = {}
     for tool in tools:
         available_functions[tool.__name__] = tool
@@ -185,32 +187,33 @@ def run_agent_codeql_with_patterns(project_path: str, tools):
         else:
             print("\nFINAL ANSWER")
             print(response.message.content)
-            break
+            return response.message.content
 
 
+'''
 if __name__ == "__main__":
 
-    """print(list_codeql_queries())
-    print(read_codeql_query_by_name("eureka-discovery-server"))"""
+    #print(list_codeql_queries())
+    #print(read_codeql_query_by_name("eureka-discovery-server"))
 
-    '''res = save_codeql_query("""import java
+    #res = save_codeql_query("""import java
 
-    from Class c, Annotation ann
-    where
-        ann = c.getAnAnnotation() and
-        ann.getType().getQualifiedName().matches("%EnableDiscoveryClient")
-    select c, c.getFile().getRelativePath()""" ,"testie", "java")
+    #from Class c, Annotation ann
+    #where
+    #    ann = c.getAnAnnotation() and
+    #    ann.getType().getQualifiedName().matches("%EnableDiscoveryClient")
+    #select c, c.getFile().getRelativePath()""" ,"testie", "java")
 
-        print(res)
+    #    print(res)
 
-        execute_codeql_query(res, "codeql-dbs/petclinic-java", "")'''
+    #    execute_codeql_query(res, "codeql-dbs/petclinic-java", "")
 
-    """
-    if len(sys.argv) == 2:
-        project_path = sys.argv[1]
-        run_agent_simple(project_path)
-    else:
-        print("too many arguments: the function expects only project path")"""
+    
+    #if len(sys.argv) == 2:
+    #    project_path = sys.argv[1]
+    #    run_agent_simple(project_path)
+    #else:
+    #    print("too many arguments: the function expects only project path")"""
 
     if len(sys.argv) == 2:
         project_path = sys.argv[1]
@@ -235,14 +238,18 @@ if __name__ == "__main__":
             read_project_file,
             list_project_directory,
             list_dir_structure,
-            save_and_execute_codeql_query,
-            create_java_annotation_to_classes_query,
-            create_java_method_calls_to_classes_query,
-            create_js_dir_to_yaml_query,
+            create_and_execute_java_annotation_to_classes_query,
+            create_and_execute_java_method_calls_to_classes_query,
+            create_and_execute_java_services_dependencies_query,
+            create_and_execute_js_dir_to_yaml_query
         ]
+        start = time.perf_counter()
         # run_agent_codeql(project_path, tools)
         run_agent_simple(project_path, tools_simple)
-        # run_agent_codeql_with_patterns(project_path, tools_patterns)
+        #run_agent_codeql_with_patterns(project_path, tools_patterns)
+        end = time.perf_counter()
+        print(f"final time {end-start}")
 
     else:
         print("too many arguments: the function expects only project path")
+'''
