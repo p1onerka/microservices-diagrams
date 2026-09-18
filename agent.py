@@ -1,19 +1,4 @@
 from ollama import chat
-import sys
-import time
-
-from agent_helpers import (
-    make_project_related_tools,
-    list_codeql_queries,
-    read_codeql_query_by_name,
-    save_codeql_query,
-    execute_codeql_query,
-    save_and_execute_codeql_query,
-    create_and_execute_java_annotation_to_classes_query,
-    create_and_execute_java_method_calls_to_classes_query,
-    create_and_execute_java_services_dependencies_query,
-    create_and_execute_js_dir_to_yaml_query,
-)
 
 from prompts import (
     create_no_codeql_prompt,
@@ -188,68 +173,3 @@ def run_agent_codeql_with_patterns(project_path: str, tools) -> str:
             print("\nFINAL ANSWER")
             print(response.message.content)
             return response.message.content
-
-
-'''
-if __name__ == "__main__":
-
-    #print(list_codeql_queries())
-    #print(read_codeql_query_by_name("eureka-discovery-server"))
-
-    #res = save_codeql_query("""import java
-
-    #from Class c, Annotation ann
-    #where
-    #    ann = c.getAnAnnotation() and
-    #    ann.getType().getQualifiedName().matches("%EnableDiscoveryClient")
-    #select c, c.getFile().getRelativePath()""" ,"testie", "java")
-
-    #    print(res)
-
-    #    execute_codeql_query(res, "codeql-dbs/petclinic-java", "")
-
-    
-    #if len(sys.argv) == 2:
-    #    project_path = sys.argv[1]
-    #    run_agent_simple(project_path)
-    #else:
-    #    print("too many arguments: the function expects only project path")"""
-
-    if len(sys.argv) == 2:
-        project_path = sys.argv[1]
-        read_project_file, list_project_directory, list_dir_structure = (
-            make_project_related_tools(project_path)
-        )
-        tools = [
-            read_project_file,
-            list_project_directory,
-            save_codeql_query,
-            execute_codeql_query,
-            list_codeql_queries,
-            read_codeql_query_by_name,
-            list_dir_structure,
-        ]
-        tools_simple = [
-            read_project_file,
-            list_project_directory,
-            list_dir_structure,
-        ]
-        tools_patterns = [
-            read_project_file,
-            list_project_directory,
-            list_dir_structure,
-            create_and_execute_java_annotation_to_classes_query,
-            create_and_execute_java_method_calls_to_classes_query,
-            create_and_execute_java_services_dependencies_query,
-            create_and_execute_js_dir_to_yaml_query
-        ]
-        start = time.perf_counter()
-        # run_agent_codeql(project_path, tools)
-        run_agent_simple(project_path, tools_simple)
-        #run_agent_codeql_with_patterns(project_path, tools_patterns)
-        end = time.perf_counter()
-        print(f"final time {end-start}")
-
-    else:
-        print("too many arguments: the function expects only project path")
-'''
