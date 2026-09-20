@@ -37,15 +37,24 @@ def create_no_codeql_prompt(project_path: str) -> str:
 
         Only when the analysis is complete, provide the final report in the form of JSON file with these fields:
         {{
-            "services": [...],
-            "relationships": [...]
-            }}
-        For every relationship you must include:
-            - source
-            - target
-            - purpose (what role does relationship play in services' work)
-            - description (protocol, mechanism of connection)
-            - evidence (place in source code that describes the relationship)
+        "services": [...],
+        "relationships": [...]
+        }}
+
+        Each service should contain enough information to explain what the service does via these fields:
+        {{
+        "name": "...",
+        "description": "..."
+        }}
+        Each relationship MUST contain:
+
+        {{
+        "source": "...",
+        "target": "...",
+        "purpose": "...",
+        "description": "...",
+        "evidence": "..."
+        }}
 
         You must return only JSON.
     """
@@ -436,7 +445,11 @@ def create_codeql_with_patterns_prompt(project_path: str) -> str:
         "relationships": [...]
         }}
 
-        Each service should contain enough information to explain what the service does and how it communicates.
+        Each service should contain enough information to explain what the service does via these fields:
+        {{
+        "name": "...",
+        "description": "..."
+        }}
         Each relationship MUST contain:
 
         {{
