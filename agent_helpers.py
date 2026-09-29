@@ -8,8 +8,6 @@ JAVA = "java"
 JAVASCRIPT = "javascript"
 
 
-# WIP: doesnt support infrastructure setup (qlpack.yml). prb make some function before agent later on
-# TODO: do smth with return value?
 def save_codeql_query(query: str, query_name: str, query_language: str) -> str:
     """
     Save the given codeQL query
@@ -38,9 +36,6 @@ def save_codeql_query(query: str, query_name: str, query_language: str) -> str:
         return f"Error creating {query_name} query file: {str(e)}"
 
 
-# TODO: make language argument optional? can be prob infered from db name
-# TODO: ADT for language
-# TODO: exceptions in separate file
 def execute_codeql_query(query_name: str, db_name: str, language: str) -> str:
     """
     Executes passed codeQL query
@@ -125,9 +120,6 @@ def delete_codeql_query(query_name: str, query_language: str):
         return f"Error deleting {query_name} query file: {str(e)}"
 
 
-
-# TODO: refactor DB connection. maybe create factory for query execution methods with db_names as parameters
-# or move dbs inside project dir to infer their path as <project_path>/db_java
 def create_and_execute_java_annotation_to_classes_query(
     ann: str, proj_name: str
 ) -> str:
@@ -185,7 +177,6 @@ def create_and_execute_java_method_calls_to_classes_query(
     return res
 
 
-# TODO: add .properties?
 def create_and_execute_java_services_config_paths_query(proj_name: str) -> str:
     """
     Creates and executes java codeQL query that finds paths to microservices' configuration YAMLs and .properties.
@@ -219,13 +210,6 @@ def create_and_execute_java_services_config_paths_query(proj_name: str) -> str:
         query_properties_name, f"{proj_name}-java", JAVA
     )
     return res_yaml + res_properties
-
-
-# if create_and_execute_java_services_dependencies_query is too heavy on tokens
-def create_and_execute_java_dir_to_dependencies_query(
-    dir_name: str, query_name: str, db_name: str
-) -> str:
-    pass
 
 
 # TODO: rename all of this to smth like "perform query"?
