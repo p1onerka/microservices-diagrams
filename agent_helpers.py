@@ -212,7 +212,6 @@ def create_and_execute_java_services_config_paths_query(proj_name: str) -> str:
     return res_yaml + res_properties
 
 
-# TODO: rename all of this to smth like "perform query"?
 def create_and_execute_java_services_dependencies_query(proj_name: str) -> str:
     """
     Creates and executes java codeQL query that finds all pom.xml files in the project and maps modules' names to their dependencies
@@ -230,7 +229,7 @@ def create_and_execute_java_services_dependencies_query(proj_name: str) -> str:
         select pom, pom.getArtifact().getValue(), pom.getDependencies().getADependency().getArtifact().getValue()
     """
     db_name = f"{proj_name}-java"
-    query_name = f"search-for-modules-dependencies.ql"
+    query_name = "search-for-modules-dependencies.ql"
     save_codeql_query(query, query_name, JAVA)
     res = execute_codeql_query(query_name, db_name, JAVA)
     delete_codeql_query(query_name, JAVA)

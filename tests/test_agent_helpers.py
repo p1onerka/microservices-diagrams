@@ -301,9 +301,13 @@ def test_execute_empty_result(java_dir, fake_codeql):
 
 # create_and_execute_java_annotation_to_classes_query
 def test_annotation_query_result_and_cleanup(java_dir, fake_codeql):
-    fake_codeql.results["query-result-search-for-RestController-annotation"] = "c,f\nA,a.java\n"
+    fake_codeql.results["query-result-search-for-RestController-annotation"] = (
+        "c,f\nA,a.java\n"
+    )
 
-    res = create_and_execute_java_annotation_to_classes_query("RestController", "petclinic")
+    res = create_and_execute_java_annotation_to_classes_query(
+        "RestController", "petclinic"
+    )
 
     assert res == "c,f\nA,a.java\n"
     assert list(java_dir.iterdir()) == []  # temporary query was deleted
@@ -312,7 +316,7 @@ def test_annotation_query_result_and_cleanup(java_dir, fake_codeql):
 def test_annotation_query_content_and_db(java_dir, sandbox, fake_codeql):
     create_and_execute_java_annotation_to_classes_query("RestController", "petclinic")
 
-    (query_path, db_path, text), = fake_codeql.executed_queries
+    ((query_path, db_path, text),) = fake_codeql.executed_queries
     assert query_path == f"{java_dir}/search-for-RestController-annotation.ql"
     assert db_path == f"{sandbox}/codeql-dbs/petclinic-java"
     assert "import java" in text
@@ -332,7 +336,7 @@ def test_method_calls_query_result_and_cleanup(java_dir, fake_codeql):
 def test_method_calls_query_content_and_db(java_dir, sandbox, fake_codeql):
     create_and_execute_java_method_calls_to_classes_query("exchange", "petclinic")
 
-    (query_path, db_path, text), = fake_codeql.executed_queries
+    ((query_path, db_path, text),) = fake_codeql.executed_queries
     assert query_path == f"{java_dir}/search-for-exchange-calls.ql"
     assert db_path == f"{sandbox}/codeql-dbs/petclinic-java"
     assert 'mc.getMethod().getName() = "exchange"' in text
@@ -351,27 +355,32 @@ def test_dependencies_query_result_and_cleanup(java_dir, fake_codeql):
 def test_dependencies_query_content_and_db(java_dir, sandbox, fake_codeql):
     create_and_execute_java_services_dependencies_query("petclinic")
 
-    (query_path, db_path, text), = fake_codeql.executed_queries
+    ((query_path, db_path, text),) = fake_codeql.executed_queries
     assert query_path == f"{java_dir}/search-for-modules-dependencies.ql"
     assert db_path == f"{sandbox}/codeql-dbs/petclinic-java"
     assert "MavenPom" in text
 
 
-
 # create_and_execute_java_services_config_paths_query
 def test_config_paths_concatenates_yaml_and_properties(fake_codeql):
     fake_codeql.results["query-result-search-for-services-yml-config"] = "yml\n"
-    fake_codeql.results["query-result-search-for-services-properties-config"] = "props\n"
+    fake_codeql.results["query-result-search-for-services-properties-config"] = (
+        "props\n"
+    )
 
     res = create_and_execute_java_services_config_paths_query("petclinic")
 
     assert res == "yml\nprops\n"
 
 
-def test_config_paths_runs_each_query_on_matching_db(java_dir, js_dir, sandbox, fake_codeql):
+def test_config_paths_runs_each_query_on_matching_db(
+    java_dir, js_dir, sandbox, fake_codeql
+):
     create_and_execute_java_services_config_paths_query("petclinic")
 
-    (yaml_q, yaml_db, yaml_text), (prop_q, prop_db, prop_text) = fake_codeql.executed_queries
+    (yaml_q, yaml_db, yaml_text), (prop_q, prop_db, prop_text) = (
+        fake_codeql.executed_queries
+    )
     assert yaml_q == f"{js_dir}/search-for-services-yml-config.ql"
     assert yaml_db == f"{sandbox}/codeql-dbs/petclinic-js"
     assert "YamlDocument" in yaml_text
