@@ -11,10 +11,12 @@ microservices-diagrams documentation
 
 Tool for generating diagrams of microservices interations based on project source code.
 Built with CodeQL engine and Mermaid diagram drawing tool.
+The repository also contains an OpenCode experiment that runs agents over the same kind of projects and records their metrics.
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules 
+   modules
+   experiment 
