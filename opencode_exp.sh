@@ -10,7 +10,7 @@ fi
 PROJECT_NAME=$(basename -- "$PROJECT_PATH")
 REPORT_PATH="report.json"
 AGENT_NAME="reading-agent"
-CODEQL_TIME_FILE="codeql_tool_time.txt"
+CODEQL_TIME_FILE="codeql_tools_time"
 OUTPUT_DIR="opencode-exp"
 CSV_FILE="$OUTPUT_DIR/${PROJECT_NAME}-${AGENT_NAME}.csv"
 
@@ -26,7 +26,7 @@ get_metric() {
 }
 
 if [[ ! -f "$CSV_FILE" ]]; then
-    echo "run,project,agent,agent_wall_time_seconds,n_tokens_max,prompt_tokens_total,prompt_tokens_cached_total,total_input_tokens,tokens_predicted_total,total_tokens,prompt_seconds_total,tokens_predicted_seconds_total,prompt_tokens_seconds,predicted_tokens_seconds,n_decode_total,requests_processing,requests_deferred,n_busy_slots_per_decode,spec_decode_num_draft_tokens_total,spec_decode_num_accepted_tokens_total,spec_decode_num_drafts_total,spec_decode_acceptance_rate,spec_decode_num_accepted_tokens_per_pos_0,spec_decode_num_accepted_tokens_per_pos_1,spec_decode_num_accepted_tokens_per_pos_2,tool_calls,tool_time_seconds,tool_time_average_seconds,agent_output" > "$CSV_FILE"
+    echo "run,project,agent,agent_wall_time_seconds,n_tokens_max,prompt_tokens_total,prompt_tokens_cached_total,tokens_predicted_total,prompt_seconds_total,tokens_predicted_seconds_total,prompt_tokens_seconds,predicted_tokens_seconds,n_decode_total,requests_processing,requests_deferred,n_busy_slots_per_decode,spec_decode_num_draft_tokens_total,spec_decode_num_accepted_tokens_total,spec_decode_num_drafts_total,spec_decode_num_accepted_tokens_per_pos_0,spec_decode_num_accepted_tokens_per_pos_1,spec_decode_num_accepted_tokens_per_pos_2,tool_calls,tool_time_seconds,tool_time_average_seconds,agent_output" > "$CSV_FILE"
 fi
 
 for i in {1..30}; do
@@ -35,7 +35,6 @@ for i in {1..30}; do
     rm -f "$CODEQL_TIME_FILE"
     rm -f "$REPORT_PATH"
 
-    # 1. Старт сервера llama.cpp
     llama serve \
     -hf ukisai/Swift-Qwen3.8-27B-GGUF:IQ4_XS \
     -c 28000 \
@@ -61,11 +60,10 @@ for i in {1..30}; do
     --spec-draft-p-min 0.8 \
     --predict 5000 \
     --n-gpu-layers all \
-    > /tmp/llama_server.log 2>&1 &
+    > tmp/llama_server.log 2>&1 &
     
     SERVER_PID=$!
 
-    # 2. Ожидание загрузки модели (проверка эндпоинта /health)
     echo "Ожидание загрузки модели..."
 
     MODEL_READY=false
@@ -86,11 +84,6 @@ for i in {1..30}; do
         wait "$SERVER_PID" 2>/dev/null
         continue
     fi
-
-    # 3. Запуск агента и захват его JSON-вывода
-    # (Возможно, потребуется дополнительная обработка, если вывод - NDJSON)
-    #opencode run --agent reading-agent "analyze project $PROJECT_PATH"
-    #opencode run --agent reading-agent "test query: write the phrase "pipi" in your report.json file"
 
     if [[ "$AGENT_NAME" == "codeql-agent" && -f "$CODEQL_TIME_FILE" ]]; then
         codeql database cleanup --cache-cleanup=clear -- {"codeql-dbs/$PROJECT_NAME-java"}
@@ -237,8 +230,13 @@ for i in {1..30}; do
     "$AGENT_OUTPUT"
 
 
-    echo "Результат сохранён в:"
+    echo "Result saved in:"
     echo "$CSV_FILE"
     echo
+
+    opencode session list --format json \
+    | jq -r '.[].id' \
+    | xargs -r -n1 opencode session delete
+
 
 done
