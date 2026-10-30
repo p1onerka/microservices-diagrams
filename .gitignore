@@ -1,0 +1,8 @@
+# python
+__pycache__
+.venv
+.ipynb_checkpoints
+
+# local infrastructure
+codeql-dbs
+logs
