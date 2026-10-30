@@ -69,6 +69,9 @@ def execute_codeql_query(query_name: str, db_name: str, language: str) -> str:
             f"{db_path}",
             "--output",
             f"{output_path}.bqrs",
+            "--no-default-compilation-cache",
+            "--no-local-checking",
+            "--no-metadata-verification",
         ]
     )
     subprocess.run(
