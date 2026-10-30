@@ -215,6 +215,9 @@ def test_execute_java_query_builds_correct_commands(java_dir, sandbox, fake_code
         f"{sandbox}/codeql-dbs/proj-java",
         "--output",
         "query-result-q.bqrs",
+        "--no-default-compilation-cache",
+        "--no-local-checking",
+        "--no-metadata-verification",
     ]
     assert decode_cmd == [
         "codeql",
