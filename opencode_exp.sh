@@ -1,8 +1,6 @@
 # Copyright (c) 2026 Ksenia Kotelnikova
 # SPDX-License-Identifier: MIT
 
-#!/bin/bash
-
 PROJECT_PATH="$1"
 
 if [[ -z "$PROJECT_PATH" ]]; then

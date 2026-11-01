@@ -1,6 +1,5 @@
 # Copyright (c) 2026 Ksenia Kotelnikova
 # SPDX-License-Identifier: MIT
-#!/bin/bash
 
 set -u
 
