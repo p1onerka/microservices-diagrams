@@ -1,4 +1,7 @@
 # Microservice interactions analyzing tool
+[![CI](https://github.com/p1onerka/microservices-diagrams/actions/workflows/CI.yml/badge.svg)](https://github.com/p1onerka/microservices-diagrams/actions/workflows/CI.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/p1onerka/microservices-diagrams/badge)](https://www.codefactor.io/repository/github/p1onerka/microservices-diagrams)
+
 A tool for building diagrams of microservices' interactions based on source code of the input project. Uses CodeQL engine for collecting data about project, Python scripts for processing it and Mermaid for showing the results.
 
 ## How to run
