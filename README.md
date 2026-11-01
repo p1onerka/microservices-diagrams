@@ -2,7 +2,21 @@
 [![CI](https://github.com/p1onerka/microservices-diagrams/actions/workflows/CI.yml/badge.svg)](https://github.com/p1onerka/microservices-diagrams/actions/workflows/CI.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/p1onerka/microservices-diagrams/badge)](https://www.codefactor.io/repository/github/p1onerka/microservices-diagrams)
 
-A tool for building diagrams of microservices' interactions based on source code of the input project. Uses CodeQL engine for collecting data about project, Python scripts for processing it and Mermaid for showing the results.
+A tool for building diagrams of microservices' interactions based on the source code of an input project. It targets Spring Cloud applications: CodeQL queries look for an Eureka discovery server and its clients, a config server, load-balanced and plain REST calls on the Java side, and service names, config-server links and frontend HTTP requests on the JavaScript side. `generate-diagram.sh` creates Java and JavaScript CodeQL databases when they are missing, runs the queries and writes the results as CSV. Python scripts then map module directories to service names and turn the calls into a Mermaid diagram, where nodes are colored by role (discovery server, config server, Eureka client) and edges show registration, instance lookup and HTTP requests.
+
+## Topics
+`microservices` `codeql` `static-analysis` `spring-cloud` `mermaid` `java` `javascript`
+
+## Dependencies
+Python 3.13. The diagram pipeline uses the standard library; the [CodeQL CLI](https://codeql.github.com/docs/codeql-cli/) is required to build databases and run the queries. Packages below are pinned in `requirements.txt` and cover tests, formatting and documentation:
+
+- pytest 9.2.0
+- pytest-cov 7.1.0
+- black 26.10.1
+- flake8 7.5.0
+- sphinx 9.2.0
+- sphinx-rtd-theme 3.1.0
+- myst-parser 5.1.0
 
 ## How to run
 Clone this repo:
