@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Ksenia Kotelnikova
+# SPDX-License-Identifier: MIT
+
 if [ $# -lt 4 ]; then
     echo "Script should be called with $0 <project_name> <project_dir> <java_database_name> <javascript_database_name>"
     exit 1

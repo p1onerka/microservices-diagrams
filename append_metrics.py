@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Ksenia Kotelnikova
+# SPDX-License-Identifier: MIT
+
 """
 Append one row of experiment metrics to a CSV file.
 

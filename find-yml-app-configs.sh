@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Ksenia Kotelnikova
+# SPDX-License-Identifier: MIT
+
 if [ $# -eq 0 -o $# -eq 1 ]; then
     echo "Script should be called with project name and output dir\n\n"
 fi
