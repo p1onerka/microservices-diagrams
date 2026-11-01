@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agent_helpers &mdash; microservices-diagrams 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            microservices-diagrams
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Data Analyzer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#mermaid-constructor">Mermaid Constructor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#diagram-drawer">Diagram Drawer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#main-script">Main Script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html">Agent Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html#codeql-mcp-server">CodeQL MCP Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html#metrics-writer">Metrics Writer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html#opencode-experiment">OpenCode Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html#experiment-launcher">Experiment Launcher</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html#opencode-agents">OpenCode Agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">microservices-diagrams</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agent_helpers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agent_helpers</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2026 Ksenia Kotelnikova</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+
+<span class="n">JAVA_QUERIES_PATH</span> <span class="o">=</span> <span class="s2">&quot;codeql-query&quot;</span>
+<span class="n">JS_QUERIES_PATH</span> <span class="o">=</span> <span class="s2">&quot;codeql-query-js&quot;</span>
+<span class="n">DBS_PATH</span> <span class="o">=</span> <span class="s2">&quot;codeql-dbs&quot;</span>
+<span class="n">JAVA</span> <span class="o">=</span> <span class="s2">&quot;java&quot;</span>
+<span class="n">JAVASCRIPT</span> <span class="o">=</span> <span class="s2">&quot;javascript&quot;</span>
+
+
+<div class="viewcode-block" id="save_codeql_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.save_codeql_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_codeql_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_language</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save the given codeQL query</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query: query text in str format</span>
+<span class="sd">        query_name: requested name of the file with query (with .ql extension)</span>
+<span class="sd">        query_language: currently supports java/javascript. Depending on language, the query will be saved in one of the directories with according setup</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        name of the query or error message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">query_language</span> <span class="o">==</span> <span class="s2">&quot;java&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JAVA_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">query_language</span> <span class="o">==</span> <span class="s2">&quot;javascript&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JS_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: the tool currently does not support queries in </span><span class="si">{</span><span class="n">query_language</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">query_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">query_name</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error creating </span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2"> query file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="execute_codeql_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.execute_codeql_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">execute_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Executes passed codeQL query</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query_name: the name of file with codeQL query (with the .ql extension)</span>
+<span class="sd">        db_name: the name of database to perform the query on</span>
+<span class="sd">        language: the target language of the query (currently java | javascript)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        the contents of .csv table with query results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;java&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JAVA_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">db_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DBS_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">language</span> <span class="o">==</span> <span class="s2">&quot;javascript&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JS_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">db_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DBS_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">db_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: the tools does not support the queries in </span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">output_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;query-result-</span><span class="si">{</span><span class="n">query_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;codeql&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;run&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">query_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--database&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">db_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.bqrs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--no-default-compilation-cache&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--no-local-checking&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--no-metadata-verification&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;codeql&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bqrs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;decode&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.bqrs&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--format=csv&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">12000</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">==</span> <span class="mi">12000</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">content</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... (file was cut due to size)&quot;</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.bqrs&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">content</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error reading results </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2"> of query </span><span class="si">{</span><span class="n">query_path</span><span class="si">}</span><span class="s2"> on db </span><span class="si">{</span><span class="n">db_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="delete_codeql_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.delete_codeql_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query_language</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deletes the given codeQL query</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query_name: requested name of the file with query (with .ql extension)</span>
+<span class="sd">        query_language: currently supports java/javascript</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        name of the query or error message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">query_language</span> <span class="o">==</span> <span class="s2">&quot;java&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JAVA_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">query_language</span> <span class="o">==</span> <span class="s2">&quot;javascript&quot;</span><span class="p">:</span>
+        <span class="n">query_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">JS_QUERIES_PATH</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error: the tool currently does not support queries in </span><span class="si">{</span><span class="n">query_language</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">query_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Error deleting </span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2"> query file: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="create_and_execute_java_annotation_to_classes_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.create_and_execute_java_annotation_to_classes_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_and_execute_java_annotation_to_classes_query</span><span class="p">(</span>
+    <span class="n">ann</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proj_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates and executes java codeQL query that finds all classes with given annotation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ann: Annotation without the @ symbol.</span>
+<span class="sd">        proj_name: the name of project to perform the query on.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The contents of .csv table with query results.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        import java</span>
+
+<span class="s2">        from Class c, Annotation ann</span>
+<span class="s2">        where</span>
+<span class="s2">            ann = c.getAnAnnotation() and</span>
+<span class="s2">            ann.getType().getQualifiedName().matches(&quot;%</span><span class="si">{</span><span class="n">ann</span><span class="si">}</span><span class="s2">&quot;)</span>
+<span class="s2">        select c, c.getFile().getRelativePath()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">db_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">proj_name</span><span class="si">}</span><span class="s2">-java&quot;</span>
+    <span class="n">query_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;search-for-</span><span class="si">{</span><span class="n">ann</span><span class="si">}</span><span class="s2">-annotation.ql&quot;</span>
+    <span class="n">save_codeql_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">execute_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">delete_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="create_and_execute_java_method_calls_to_classes_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.create_and_execute_java_method_calls_to_classes_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_and_execute_java_method_calls_to_classes_query</span><span class="p">(</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proj_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates and executes java codeQL query that finds all classes with given method calls and returns their name and file with main class</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        method: Method to find calls of.</span>
+<span class="sd">        proj_name: the name of project to perform the query on.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The contents of .csv table with query results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        import java</span>
+
+<span class="s2">        from MethodCall mc</span>
+<span class="s2">        where mc.getMethod().getName() = &quot;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="s2">        select mc.getCompilationUnit(), mc.getCompilationUnit().getRelativePath()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">db_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">proj_name</span><span class="si">}</span><span class="s2">-java&quot;</span>
+    <span class="n">query_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;search-for-</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">-calls.ql&quot;</span>
+    <span class="n">save_codeql_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">execute_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">delete_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="create_and_execute_java_services_config_paths_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.create_and_execute_java_services_config_paths_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_and_execute_java_services_config_paths_query</span><span class="p">(</span><span class="n">proj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates and executes java codeQL query that finds paths to microservices&#39; configuration YAMLs and .properties.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        proj_name: the name of project to perform the query on.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The contents of .csv table with query results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query_yaml</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        import javascript</span>
+
+<span class="s2">        from YamlDocument doc</span>
+<span class="s2">        where doc.getFile().getExtension() in [&quot;yml&quot;, &quot;yaml&quot;] and</span>
+<span class="s2">            doc.getFile().toString().matches(&quot;%/src/main/resources%&quot;)</span>
+<span class="s2">        select doc.getFile().getRelativePath()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">query_properties</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;import java</span>
+<span class="s2">        import semmle.code.configfiles.ConfigFiles</span>
+
+<span class="s2">        from PropertiesFile config</span>
+<span class="s2">        where config.getRelativePath().toString().matches(&quot;%/src/main/resources%&quot;)</span>
+<span class="s2">        select config.getRelativePath()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">query_yaml_name</span> <span class="o">=</span> <span class="s2">&quot;search-for-services-yml-config.ql&quot;</span>
+    <span class="n">query_properties_name</span> <span class="o">=</span> <span class="s2">&quot;search-for-services-properties-config.ql&quot;</span>
+    <span class="n">save_codeql_query</span><span class="p">(</span><span class="n">query_yaml</span><span class="p">,</span> <span class="n">query_yaml_name</span><span class="p">,</span> <span class="n">JAVASCRIPT</span><span class="p">)</span>
+    <span class="n">save_codeql_query</span><span class="p">(</span><span class="n">query_properties</span><span class="p">,</span> <span class="n">query_properties_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">res_yaml</span> <span class="o">=</span> <span class="n">execute_codeql_query</span><span class="p">(</span><span class="n">query_yaml_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">proj_name</span><span class="si">}</span><span class="s2">-js&quot;</span><span class="p">,</span> <span class="n">JAVASCRIPT</span><span class="p">)</span>
+    <span class="n">res_properties</span> <span class="o">=</span> <span class="n">execute_codeql_query</span><span class="p">(</span>
+        <span class="n">query_properties_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">proj_name</span><span class="si">}</span><span class="s2">-java&quot;</span><span class="p">,</span> <span class="n">JAVA</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">res_yaml</span> <span class="o">+</span> <span class="n">res_properties</span></div>
+
+
+
+<div class="viewcode-block" id="create_and_execute_java_services_dependencies_query">
+<a class="viewcode-back" href="../experiment.html#agent_helpers.create_and_execute_java_services_dependencies_query">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_and_execute_java_services_dependencies_query</span><span class="p">(</span><span class="n">proj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates and executes java codeQL query that finds all pom.xml files in the project and maps modules&#39; names to their dependencies</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        proj_name: the name of project to perform the query on.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The contents of .csv table with query results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        import java</span>
+<span class="s2">        import semmle.code.xml.MavenPom</span>
+
+<span class="s2">        from Pom pom</span>
+<span class="s2">        select pom, pom.getArtifact().getValue(), pom.getDependencies().getADependency().getArtifact().getValue()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">db_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">proj_name</span><span class="si">}</span><span class="s2">-java&quot;</span>
+    <span class="n">query_name</span> <span class="o">=</span> <span class="s2">&quot;search-for-modules-dependencies.ql&quot;</span>
+    <span class="n">save_codeql_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">execute_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="n">delete_codeql_query</span><span class="p">(</span><span class="n">query_name</span><span class="p">,</span> <span class="n">JAVA</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Ksenia Kotelnikova (p1onerka).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
