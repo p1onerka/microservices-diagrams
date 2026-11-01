@@ -15,6 +15,17 @@ Run the project:
     ./generate-diagram.sh \<project_name\> \<project_dir\> \<java_db_name\> \<javascript_db_name\>
 ```
 
+## Experiment
+Run the OpenCode agent on one project (30 repetitions, metrics are written to `opencode-exp/`):
+```bash
+    ./opencode_exp.sh <project_path>
+```
+Run it over the project list. Set `PROJECTS_DIR` in `exp_launcher.sh` to the directory with the cloned projects first:
+```bash
+    ./exp_launcher.sh
+```
+The agent under test is selected by `AGENT_NAME` in `opencode_exp.sh` (`reading-agent` or `codeql-agent`).
+
 ## How to run tests
 Install dependencies:
 ```bash
