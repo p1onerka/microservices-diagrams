@@ -1,4 +1,5 @@
-#!/bin/bash
+# Copyright (c) 2026 Ksenia Kotelnikova
+# SPDX-License-Identifier: MIT
 
 PROJECT_PATH="$1"
 

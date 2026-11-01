@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Ksenia Kotelnikova
+# SPDX-License-Identifier: MIT
+
 CONFIG_SERVER_TYPE = "config_server"
 CONFIG_SERVER_DESCRIPTION = "configs for all services"
 CONFIG_SERVER_FILL = 0xD8A059
