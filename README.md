@@ -5,7 +5,7 @@
 A tool for building diagrams of microservices' interactions based on the source code of an input project. It targets Spring applications: CodeQL queries look for an Eureka discovery server and its clients, a config server, load-balanced and plain REST calls on the Java side, and service names, config-server links and frontend HTTP requests on the JavaScript side. `generate-diagram.sh` creates Java and JavaScript CodeQL databases when they are missing, runs the queries and writes the results as CSV. Python scripts then map module directories to service names and turn the calls into a Mermaid diagram, where nodes are colored by role (discovery server, config server, Eureka client) and edges show registration, instance lookup and HTTP requests.
 
 ## Dependencies
-Python 3.13. The diagram pipeline uses the standard library; the [CodeQL CLI](https://codeql.github.com/docs/codeql-cli/) is required to build databases and run the queries. Packages below are pinned in `requirements.txt` and cover tests, formatting and documentation:
+Python 3.14. The diagram pipeline uses the standard library; the [CodeQL CLI](https://codeql.github.com/docs/codeql-cli/) is required to build databases and run the queries. Packages below are pinned in `requirements.txt` and cover tests, formatting and documentation:
 
 - pytest 9.2.0
 - pytest-cov 7.1.0
