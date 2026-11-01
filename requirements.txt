@@ -1,7 +1,13 @@
-pytest
-black
-flake8
-pytest-cov
-sphinx
-sphinx-rtd-theme
-myst-parser
+# Python 3.14
+# Tests
+pytest==9.2.0
+pytest-cov==7.1.0
+
+# Formatting and lint
+black==26.10.1
+flake8==7.5.0
+
+# Documentation
+sphinx==9.2.0
+sphinx-rtd-theme==3.1.0
+myst-parser==5.1.0
